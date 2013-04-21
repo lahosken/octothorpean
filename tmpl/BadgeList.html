@@ -1,0 +1,13 @@
+#wrap:BASE.html#
+#BODY#
+<center>
+<h1><a href="/">#</a> Merit Badges</h1>
+
+<table><tr><td>
+<ul>
+{{range $nick, $bling := .Badges}}
+<li><a href="/b/{{$nick}}">{{$bling.Pretty}}</a>
+{{end}}
+</ul>
+</table>
+#BODY#

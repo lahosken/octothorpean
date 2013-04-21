@@ -1,0 +1,4 @@
+cron:
+- description: early morning cleanup
+  url: /cron/weehours
+  schedule: every day 09:10

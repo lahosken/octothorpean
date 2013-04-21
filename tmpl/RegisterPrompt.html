@@ -1,0 +1,35 @@
+#wrap:BASE.html#
+#BODY#
+<h1><a href="/">#</a> Register New Team</h1>
+<form action="/register" method="POST">
+     <table>
+     <tr>
+     <td><label for="team">Team Name:</label>
+     <td><input type="text" name="team" id="team" size=40 maxlength=40 
+                value="{{.Team|html}}">
+     <tr>
+     <td colspan=2><center>Password sent to these:</center>
+{{range .EmailList}}
+     <tr>
+     <td>Player's Email:
+     <td><input type="text" name="m" size=40
+         value="{{.|html}}">
+{{end}}
+     <tr>
+     <td><label for="description">Description:</label>
+     <td><input type="text" name="description" id="description" 
+                size=150 maxlength=150
+                value="{{.Description|html}}">
+     <tr>
+     <td><label for="mailOK">Announcements?</label>
+     <td><input type="checkbox" name="announceok" checked=checked>
+         OK to mail new puzzles, etc.?
+         (Less than 1/month)
+     <tr>
+     <td colspan=2><input type="submit" value="Register">
+     </table>
+</form>
+
+Don't want to register a new team? 
+Then <a href="/loginprompt?team={{.TeamURL}}">don't</a>.
+#BODY#

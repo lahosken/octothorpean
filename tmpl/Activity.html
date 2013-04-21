@@ -1,0 +1,78 @@
+#wrap:WIDE.html#
+#HEAD#
+<script>
+nickname = '{{.Nickname}}'; guesstoken = '{{.GuessToken}}'; hinttoken = '{{.HintToken}}';
+initJSON = {{.ActInitJSON}};
+</script>
+<style>
+.lert { text-align: right; }
+</style>
+#HEAD#
+#BODY#
+  <div style="background-color: #333; position: fixed; top: 0px; left: 0px;   width: 100%; height: 30px; /* same as undermenubar height */ background-color: #eee; border-bottom: 2px dotted #224; padding: 2px; font: bold 20px sans-serif;">
+  
+  <div style="float: right;"><small>
+  {{if .TID}}{{else}}<a href="/loginprompt">Login?</a>{{end}}
+  </small></div>
+  
+  <nobr><span class="h"><a href="/">#</a>
+        {{.Title|html}}</span></nobr>
+  {{ if .SolvedP }}<small class="label label-info">(answer is {{ .Solution }})</small>{{ end }}
+
+  <button id="showgossip" href="#gossipbox" data-toggle="modal"
+       style="position: absolute; top: 2px; left: 50%;">Gossip</button>
+  <button id="showhints" href="#hintbox" data-toggle="modal"
+       style="position: absolute; top: 2px; left: 60%;">Hints</button>
+  <input type="text" name="guess" id="guess" placeholder="Enter answer..."
+       style="position: absolute; top: 2px; left: 70%; width: 10%;">
+  <a class="btn btn-primary" id="guessbutton"
+       style="position: absolute; top: 2px; left: 85%;"><i class="icon-check"></i></a>
+  </div>
+
+
+<div id=feedback style="position: fixed; top: 40px; left: 50%; width: 50%; text-align: right;">
+</div>
+
+<div style="position: absolute; top: 0px; left: 0px; z-index: -1; width: 100%;">
+  <div style="height: 38px; width: 100%;">&nbsp;</div>
+<center style="width: 100%;">
+<table><tr><td style="background-color: white;">
+  {{.Guts}}
+</table>
+
+{{ if .Icon }} {{ if .IconLink }}
+<center class="bl"> <a href="{{.IconLink}}"><img
+  src="{{ .Icon }}"></a>
+</center>
+{{ end }} {{ end }}
+</center>
+</div>
+
+<div id="gossipbox" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h2>Gossip</h2>
+  </div>
+  <ul id=gossiplist></ul> 
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+<div id="hintbox" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h2>Hints</h2>
+  </div>
+  <div class="modal-body">
+    <ul id=hintlist></ul>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="hintbutton">Hint, please!</button>
+  </div>
+</div>
+
+<script src="/s/activity.js"></script>
+#BODY#

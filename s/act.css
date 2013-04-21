@@ -1,0 +1,93 @@
+body {
+  background-image: url('/s/bg.jpg');
+  background-color: #ddf;
+  padding: 0px;
+  margin: 0px;
+}
+center {
+  background: inherit;
+}
+.main {
+  background-color: white;
+  border-left: 1px dotted #224;
+  border-right: 1px dotted #224;
+  margin: 0px 1em;
+  padding: 1em;
+}
+#menubar {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 26px; /* same as undermenubar height */
+  background-color: #eee;
+  border-bottom: 2px dotted #224;
+  padding: 2px;
+  font: bold 20px sans-serif;
+}
+
+#menubar a {
+  text-decoration: none;
+  color: black;
+}
+#menubar a:hover {
+  background-color: #ddf;
+  color: black;
+}
+
+#undermenubar {
+  height: 24px; /* same as undermenubar height */
+  padding: 0px:
+  margin: 0px;
+}
+#menubar div { 
+  text-align: center; 
+  cursor: pointer;
+}
+#menubar div:hover { 
+  background-color: #ddf;
+}
+#showgossip {
+  position: fixed; top: 2px; left: 50%; width: 9%;
+  background-color: #ddd;
+  border: 1px dotted #224;
+}
+#gossipbox {
+  position: fixed; top: 36px; left: 31%; width: 48%; 
+  background-color: #eef; border: 2px dotted #cce;
+}
+#showhints {
+  position: fixed; top: 2px; left: 60%; width: 9%;
+  background-color: #ddd;
+  border: 1px dotted #224;
+}
+#hintbox {
+  position: fixed; top: 36px; left: 41%; width: 48%; 
+  background-color: #eef; border: 2px dotted #cce;
+}
+#showguess {
+  position: fixed; top: 2px; left: 70%; width: 9%;
+  background-color: #ddd;
+  border: 1px dotted #224;
+}
+#guessbox {
+  position: fixed; top: 36px; left: 51%; width: 48%; 
+  background-color: #eef; border: 2px dotted #cce;
+}
+.button {
+  background-color: #aac; text-decoration: none; color: black;
+  border: 2px dotted #224;
+}
+.button:hover {
+  background-color: #eff;
+}
+.bl {
+  margin: 4em;
+}
+.bl a img {
+  border: 1px dotted black;
+}
+.bl a img:hover {
+  border: 1px solid black;
+}
+

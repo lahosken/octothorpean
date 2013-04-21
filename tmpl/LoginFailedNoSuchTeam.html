@@ -1,0 +1,16 @@
+#wrap:BASE.html#
+#BODY#
+<p>I don't know a team named {{.Team|html}}.
+{{if .Similars}}
+<p>Did you mean:
+<ul>
+{{range .Similars}}
+<li><a href="/loginprompt?team={{.|html}}">{{.|html}}</a>
+{{end}}
+</ul>
+{{end}}
+<p>If your team is new (not yet registered), you can
+   <a href="/registerprompt?team={{.TeamURL|html}}">register it</a>.
+<p>If it was just a typo, 
+   <a href="/loginprompt?team={{.TeamURL|html}}">try again</a>.
+#BODY#

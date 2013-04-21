@@ -1,0 +1,37 @@
+#skip
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>{{.PageTitle}}</title>
+<link rel=stylesheet href="/s/bootstrap.min.css">
+<script src="/s/jquery-1.9.0.min.js"></script>
+<script src="/s/bootstrap.min.js"></script>
+<style>
+body { background-image: url('/s/bg.jpg'); }
+center.main { margin: 0px 1em; }
+td.bguts { background-color: white; padding: 1em; }
+</style>
+#HEAD#
+</head>
+<body>
+
+
+<div style="float:right; font-size: small;">
+{{if .TID}}
+{{.TID|html}}
+{{else}}
+<a href="/loginprompt">Login</a>?
+{{end}}
+</div>
+
+<center class="main">
+<table><tr><td class="bguts">
+
+#BODY#
+</table>
+</center>
+
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+body {
+  background-color: #593651;
+  font-family: sans;
+  margin: 0px;
+}
+#header {
+  background-color: #6eadef;
+  padding: 4px 8px;
+  width: 100%;
+  height: 24px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+#header .h {
+  font-size: 20px;
+}
+.colo {
+  position: absolute;
+  margin: 8px;
+  top: 0;
+}
+.coli {
+  padding: 4px;
+  width: 90%;
+  padding-bottom: 20em;
+}
+#col1 {
+  top: 0;
+  left: 0;
+  width: 25%;
+}
+#col2 {
+  top: 0;
+  left: 25%;
+  width: 25%;
+}
+#col3 {
+  top: 0;
+  left: 50%;
+  width: 50%;
+}
+#gossipd {
+  background-color: #b9ffff;
+}
+#hintd {
+  background-color: #ffbfff;
+}
+#gadgetd {
+  background-color: #badbeb;
+}
+.ch {
+  font: bold large sans-serif;
+  text-align: center;
+  margin: 2px;
+}
+.csubh {
+  font: normal italic small sans-serif;
+  text-align: center;
+  margin: 0px;
+}
+.coli ul {
+  padding-left: 1em;
+}
+
+.button {
+  background-color: #f79596;
+  border: 2px dotted red;
+  padding: 2px;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+}
+.button:hover {
+  background-color: #69fefb;
+  border: 2px dotted black;
+}

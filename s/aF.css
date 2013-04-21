@@ -1,0 +1,57 @@
+#menubar {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 24px; /* same as undermenubar height */
+  background-color: #da54ac;
+  border-bottom: 2px dotted #ade3e4;
+  padding: 2px;
+  font: bold 20px sans-serif;
+}
+
+#undermenubar {
+  height: 24px; /* same as undermenubar height */
+  padding: 0px:
+  margin: 0px;
+}
+#menubar div { 
+  text-align: center; 
+  cursor: pointer;
+}
+#menubar div#hover { 
+  background-color: #ef6fbf;
+}
+
+#showgossip {
+  position: fixed; top: 2px; left: 50%; width: 9%;
+  background-color: #b95580; border: 1px dotted  #a04070;
+}
+#gossipbox {
+  position: fixed; top: 36px; left: 31%; width: 48%; 
+  background-color: #b95580; border: 3px dotted  #a04070;
+}
+#showhints {
+  position: fixed; top: 2px; left: 60%; width: 9%;
+  background-color: #ddddff; border: 1px dotted  #c0c0e0;
+}
+#hintbox {
+  position: fixed; top: 36px; left: 41%; width: 48%; 
+  background-color: #ddddff; border: 3px dotted  #c0c0e0;
+}
+#showguess {
+  position: fixed; top: 2px; left: 70%; width: 9%;
+  background-color: #ddffdd; border: 1px dotted  #c0e0c0;
+}
+#guessbox {
+  position: fixed; top: 36px; left: 51%; width: 48%; 
+  background-color: #ddffdd; border: 3px dotted  #c0e0c0;
+}
+.button {
+  background-color: #afe; text-decoration: none; color: black;
+  border: 2px dotted cyan;
+}
+.button#hover {
+  background-color: blue;
+}
+

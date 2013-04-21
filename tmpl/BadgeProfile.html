@@ -1,0 +1,30 @@
+#wrap:BASE.html#
+#HEAD#
+<style>
+img.icon {
+  width: 200px; height: 200px;
+  background-image: url('/a/octothorpe/badgebkgd.png');
+}
+</style>
+#HEAD#
+#BODY#
+<h1><a href="/">#</a> <a href="/b/">Merit Badge</a>: {{.Pretty}}</h1>
+
+<center>
+<div class="icon">
+<img src="/a/bdge/{{.BadgeID}}.png" width=200 height=200
+     alt="Badge: {{.Pretty}}" class="icon">
+</div>
+
+<table><tr><td>
+{{.Description}}
+</table>
+
+<table><tr><td>
+<ul>
+{{range .Gossip}}
+<li><small><script>document.write(new Date({{.T}}).toDateString());</script></small> <a href="/team/{{.M}}">{{.M}}</a> earned this badge.
+{{end}}
+</ul>
+</table>
+#BODY#

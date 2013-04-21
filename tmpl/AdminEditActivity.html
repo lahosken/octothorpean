@@ -1,0 +1,76 @@
+#wrap:ADMIN.html#
+#BODY#
+<div style="float: right; border:1px dotted blue;">
+Load another puzzle?
+<form method=POST>
+<input type="text" name="nickname"> <input type="submit" value="Load">
+<input type="hidden" name="verb" value="load">
+</form>
+</div>
+
+<h1>Edit an Activity</h1>
+
+{{if .Status}}
+<p style="background-color: #FDD;">{{.|html}}
+{{else}}
+<p style="background-color: #DFD;">Have fun!
+{{end}}
+
+<form method=POST style="clear:both;">
+  <table>
+  <tr>
+  <td><label for="nickname">Nickname:</label> e.g., indexing101, gophers
+  <td><input type="text" name="nickname"
+             size=40 maxlength=40 value="{{.Nickname|html}}">
+  <tr>
+  <td><label for="title">Title:</label> e.g., Indexing 101! Gopher Panic!
+  <td><input type="text" name="title"
+             size=80 maxlength=80 value="{{.Title|html}}">
+  <tr>
+  <td><label for="gcnote">GC Note:</label> e.g., The one with the gophers
+  <td><input type="text" name="gcnote"
+             size=80 maxlength=80 value="{{.GCNote|html}}">
+  <tr>
+  <td><label for="url">URL:</label> Where I can browse the puzzle
+  <td><input type="text" name="url"
+             size=100 maxlength=100 value="{{.URL|html}}">
+  <tr>
+  <td style="border-top: 1px dotted gray;">
+      <b>Solutions.</b> First is "main". 
+      Others useful for, e.g., "lincoln" "abelincoln"
+  <td style="border-top: 1px dotted gray;">
+{{range .Solutions}}
+      <input type="text" name="sol"
+             size=40 maxlength=40 value="{{.|html}}"><br>
+{{end}}
+  <tr>
+  <td style="border-top: 1px dotted gray;">
+      <b>Partials.</b> If you enter
+      just one word, that's the partial.  If more 
+      than one word, then the part after the first word is
+      explanation, e.g. , "cheap That's what it says, but consider: this whole puzzle is about fruit anagrams"
+  <td style="border-top: 1px dotted gray;">
+{{range .Partials}}
+      <input type="text" name="part"
+             size=40 maxlength=40 value="{{.|html}}"><br>
+{{end}}
+  <tr>
+  <td style="border-top: 1px dotted gray;"><b>Hints</b>
+  <td style="border-top: 1px dotted gray;">
+{{range .Hints}}
+      <input type="text" name="hint"
+             size=40 maxlength=40 value=""><br>
+      <input type="text" name="hint"
+             size=40 maxlength=40 value="{{.|html}}"><br>
+{{end}}
+  <tr>
+  <td COLSPAN=2>
+  <label for="guts">HTML of the puzzle</label> You love editing HTML, right?<br>
+  <textarea name="guts" style="width: 100%; height:4em;">
+  {{.Guts|html}}
+  </textarea>
+  </table>
+<input type="submit" value="Save">
+<input type="hidden" name="verb" value="save">
+</form>
+#BODY#

@@ -1,0 +1,4 @@
+queue:
+- name: digest
+  rate: 5/s
+# Gotta specify a rate. I guess the default rate for the default queue is good.

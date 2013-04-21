@@ -1,0 +1,32 @@
+#wrap:BASE.html#
+#HEAD#
+<style>
+li.bdge { display: inline-block; width:100px; height:100px; 
+          background-size: 100% 100%;
+          text-align: center; vertical-align: top; }
+li.bdge a { background-color: white; }
+li.bdge a:hover { background-color: black; color: yellow; }
+</style>
+#HEAD#
+#BODY#
+<h1><a href="/">#</a> Team {{.TeamID|html}}</h1>
+
+{{.Description|html}}
+
+{{$BadgeInfo := .BadgeInfo}}
+
+<ul>
+{{range .Badges}}
+<li class="bdge"
+    style="background-image: url('/a/bdge/{{.Name}}.png')">
+    <a href="/b/{{.Name}}">
+    {{.Pretty}} Level&nbsp;{{.Level}}</a></li>
+{{end}}
+</ul>
+
+<ul>
+{{range .Gossip}}
+<li><small><script>document.write(new Date({{.T}}).toDateString());</script></small> {{.M}}
+{{end}}
+</ul>
+#BODY#

@@ -1,0 +1,17 @@
+body {
+  background-image: url(/s/bg.jpg);
+  background-repeat: repeat;
+  background-color: #eee;
+}
+.main {
+  background-color: white;
+  margin: 0px 1em;
+  padding: 0px 1em;
+  border-left: 1px dotted #224;
+  border-right: 1px dotted #224;
+}
+#gossiplist li {
+  background-color: #ccf;
+  margin-bottom: 2px;
+  padding: 2px;
+}

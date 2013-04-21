@@ -1,0 +1,31 @@
+#wrap:BASE.html#
+#BODY#
+<h1><a href="/">#</a> Editing Team {{.Team|html}}</h1>
+    <form action="/editteam" method="POST">
+     <table>
+     <tr>
+     <td>Team Name:
+     <td>{{.Team|html}}
+{{range .EmailList}}
+     <tr>
+     <td>Player's Email:
+     <td><input type="text" name="m" size=40 
+                value="{{.|html}}">
+{{end}}
+     <tr>
+     <td><label for="description">Description:</label>
+     <td><input type="text" name="description" id="description" 
+                size=40 maxlength=160 value="{{.Description|html}}">
+     <tr>
+     <td><label for="mailOK">Announcements?</label>
+     <td><input type="checkbox" name="announceok" 
+                {{if .AnnounceOK}}checked=checked{{end}}>
+         OK to mail new puzzles, etc.?
+         (Less than 1/month)
+     <tr>
+     <td colspan=2><input type="submit" value="Update">
+                   <a href="/">Cancel</a>
+     </table>
+     <input type="hidden" name="token" value="{{.Token|html}}">
+    </form>
+#BODY#

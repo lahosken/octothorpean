@@ -1,0 +1,18 @@
+#wrap:BASE.html#
+#BODY#
+  <center style="clear: both;">
+  <h1><a href="/">#</a> {{.Arc.Title}}</h1>
+  <table><tbody>
+  {{range .States}}
+    <tr>
+    {{if .ActID}}
+      <td><a href="/a/{{.ActID}}/">{{.ActID}}</a>&nbsp;&nbsp;
+      <td>{{if .SolvedP}}<b>Solved</b>{{else}}<a href="/a/{{.ActID}}/">???</a>{{end}}
+    {{else}}
+    <tr><td>??? <td>???
+    {{end}}
+  {{end}}
+  </tbody></table>
+  {{if .Arc.Icon}}<img src="{{.Arc.Icon}}">{{end}}
+  </center>
+#BODY#

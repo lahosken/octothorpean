@@ -1,0 +1,34 @@
+#wrap:ADMIN.html#
+#BODY#
+{{if .AID}}
+    <form action="{{.UploadURL}}" method="POST" enctype="multipart/form-data">
+     <table>
+     <tr>
+     <td colspan=2>Logged in as {{.AID}}
+     <tr>
+     <td>Zip File:
+     <td><input type="file" name="file">
+     <tr>
+     <td>&nbsp;
+     <td><input type="submit" name="submit" value="Submit">
+     </table>
+    </form>
+
+or 
+
+    <form action="/admin/uploadintera" method="POST" enctype="multipart/form-data">
+     <table>
+     <tr>
+     <td>INTERA File:
+     <td><input type="file" name="file">
+     <tr>
+     <td>&nbsp;
+     <td><input type="submit" name="submit" value="Submit">
+     </table>
+    </form>
+{{else}}
+
+     It won't work unless you
+                   <a href="/admin/loginprompt">log in</a>.
+{{end}}
+#BODY#
