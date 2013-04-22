@@ -1,0 +1,21 @@
+#wrap:ADMIN.html#
+#HEAD#
+<script src="/s/jquery-1.9.0.min.js"></script>
+<script src="/s/bootstrap.min.js"></script>
+<script>
+document['gossipurl'] = 'http://www.octothorpean.org/admin/gossip.json';
+if (document.URL.indexOf('localhost') > 1) {
+  document['gossipurl'] = 'http://localhost:8080/admin/gossip.json';
+}
+</script>
+<script src="/s/dashboard.js"></script>
+#HEAD#
+#BODY#
+<h1><a href="/">#</a> <a href="/admin/">Admin</a> / Gossip</h1>
+
+<div id="gossip">
+<ul>
+<li>(prehistory)
+</ul>
+</div>
+#BODY#

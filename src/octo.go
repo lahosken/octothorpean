@@ -38,6 +38,8 @@ func init() {
 	http.HandleFunc("/editteam", editteam)
 	// admin
 	http.HandleFunc("/admin/", adminmenu)
+	http.HandleFunc("/admin/gossip", admingossip)
+	http.HandleFunc("/admin/gossip.json", admingossipjson)
 	http.HandleFunc("/admin/login", adminlogin)
 	http.HandleFunc("/admin/upload", adminupload)
 	http.HandleFunc("/admin/digestupload", digestupload)

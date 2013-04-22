@@ -26,7 +26,7 @@ nb.dashboard.fillUI = function(obj) {
 	if (!obj) { return; }
 	if (obj['gossip']) {
 		var gd = goog.dom.getElement('gossip');
-   	        var gl = goog.dom.createDom('ul', {})
+   	    var gl = goog.dom.createDom('ul', {})
 		var prevDateTime = 0;
                 var d = false;
 		goog.array.forEach(obj['gossip'], function(el, ix, ar) {

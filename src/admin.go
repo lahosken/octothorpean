@@ -16,6 +16,7 @@ import (
 	"html"
 	"io"
 	"net/http"
+	"net/url"
 	"path"
 	"strings"
 	"text/template"
@@ -553,4 +554,39 @@ func ALog(context appengine.Context, aid string, verb string, notes string) erro
 			aid, verb, notes, err.Error())
 	}
 	return err
+}
+
+func admingossip(w http.ResponseWriter, r *http.Request) {
+	template.Must(template.New("").Parse(tAdminGossip)).Execute(w, struct {
+		PageTitle string
+	}{
+		PageTitle: "Admin / Gossip",
+	})
+}
+
+func admingossipjson(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "text/javascript")
+    aid := checkAdminLogin(w, r);
+    if (aid == "") { 
+		fmt.Fprintf(w, `alert("Not logged in!");`);
+		return
+	}
+	context := appengine.NewContext(r)
+	fetched := fetchGossip(context)
+	l := []tidbit{}
+	for _, tlr := range fetched {
+		t := fmt.Sprintf(`Team <a href="/team/%s">%s</a>`,
+			html.EscapeString(url.QueryEscape(url.QueryEscape(tlr.TeamID))),
+			html.EscapeString(tlr.TeamID))
+		a := fmt.Sprintf(`<a href="/a/%s/">%s</a>`,
+			html.EscapeString(tlr.ActID), html.EscapeString(tlr.ActID))
+		v := tlr.Verb;
+        g := html.EscapeString(tlr.Guess)
+        n := html.EscapeString(tlr.Notes)
+		l = append(l, tidbit{
+			T: tlr.Created.Unix() * 1000,
+			M: fmt.Sprintf(`%s %s %s %s %s`, t, v, a, g, n),
+		})
+	}
+	spewjsonp(w, r, map[string](interface{}) { "gossip": l })
 }

@@ -10,7 +10,9 @@ var fillUI = function(obj) {
 			el = obj['gossip'][ix]
 			d = new Date(el['T']);
 			if (d <= alreadyTime) { continue; }
-            var t = '' + d.getHours() + ':' + d.getMinutes();
+            var tm = '' + d.getMinutes()
+			if (tm.length < 2) { tm = '0' + tm; }
+            var t = '' + d.getHours() + ':' + tm;
 			if (el['T'] < prevDateTime + (60 * 60 * 12)) {
 				t = '' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + t;
 			}
@@ -29,6 +31,7 @@ var seekGossip = function() {
 	if (document.URL.indexOf('localhost') > 1) {
 		url = 'http://localhost:8080/gossip';
 	}
+	if (document['gossipurl']) { url = document['gossipurl']; }
 	jQuery.ajax(url, {
 		'dataType': 'json',
 		'success': fillUI,
