@@ -183,7 +183,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		PageTitle string
 		TID       string
 	}{
-		PageTitle: "Admin / Gossip",
+		PageTitle: "Dashboard",
 		TID:       tid,
 	})
 }

@@ -36,12 +36,7 @@ var fillUI = function(obj) {
 }
 
 var sendGuess = function() {
-	// domain is octothorpean or localhost
-    var url = 'http://www.octothorpean.org/guess';
-    if (document.URL.indexOf('localhost') > 1) {
-        url = 'http://localhost:8080/guess';
-    }
-	jQuery.ajax(url, {
+	jQuery.ajax('/guess', {
 		'data': {
 			'act': nickname,
 			'guess': $('#guess')[0].value,
@@ -59,11 +54,7 @@ var sendGuess = function() {
 }
 
 var seekGossip = function() {
-	var url = 'http://www.octothorpean.org/gossip';
-	if (document.URL.indexOf('localhost') > 1) {
-		url = 'http://localhost:8080/gossip'
-	}
-	jQuery.ajax(url, {
+	jQuery.ajax('/gossip', {
 		'data': {
 			'act': nickname,
 		},
@@ -75,11 +66,7 @@ var seekGossip = function() {
 
 var seekHint = function() {
 	var already = $('#hintlist').children().length;
-	var url = 'http://www.octothorpean.org/hint';
-	if (document.URL.indexOf('localhost') > 1) {
-		url = 'http://localhost:8080/hint';
-	}
-	jQuery.ajax(url, {
+	jQuery.ajax('/hint', {
 		'data': {
 			'act': nickname,
 			'num': already+1,
@@ -99,6 +86,15 @@ $('#guess').keydown(function(e){
 	if (e.keyCode && e.keyCode == 13) {
 		return sendGuess();
 	}
+});
+$('blanks').replaceWith(function() {
+	var s = $(this)[0].innerText;
+	s = s.replace(/\./g, '_');
+	s = s.replace(/O/g, '&#9711;');
+	s = s.replace(/ /g, ' &nbsp; ');
+	s = s.replace(/__/g, '_&nbsp;_');
+	s = s.replace(/__/g, '_&nbsp;_');
+	return '<span class="blanks">' + s + '</span>';
 });
 seekGossip();
 fillUI(initJSON);
