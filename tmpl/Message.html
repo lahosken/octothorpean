@@ -4,6 +4,6 @@
 {{if .GoBack}}
 <p><a href="{{.GoBack|html}}">Back</a>
 {{else}}
-<p><a href="/">OK</a>!
+<p><button onClick="history.back();">OK</button>!
 {{end}}
 #BODY#

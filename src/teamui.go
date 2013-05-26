@@ -223,7 +223,8 @@ Login at http://octothorpean.org/loginprompt?team=%s
 		return
 	}
 	showMessage(w, "Check your mail!",
-		"Account created! Check your mail for the password.", "", "")
+		"Account created! Check your mail for the password.", "", 
+		fmt.Sprintf("/loginprompt?team=%s", url.QueryEscape(newTeamRecord.ID)))
 }
 
 func resetpasswordprompt(w http.ResponseWriter, r *http.Request) {

@@ -1,5 +1,5 @@
 var showLert = function(s) {
-	$('#feedback').prepend('<div class="lert alert alert-info" style="display:none;">' + s + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>')
+	$('#feedback').prepend('<div class="lert alert alert-info" style="display:none;"><button type="button" class="close" data-dismiss="alert">&times;</button>' + s + '</div>')
     $('.lert').alert().show(0.5)
 }
 

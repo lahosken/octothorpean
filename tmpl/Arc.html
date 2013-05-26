@@ -7,7 +7,7 @@
     <tr>
     {{if .ActID}}
       <td><a href="/a/{{.ActID}}/">{{.ActID}}</a>&nbsp;&nbsp;
-      <td>{{if .SolvedP}}<b>Solved</b>{{else}}<a href="/a/{{.ActID}}/">???</a>{{end}}
+      <td>{{if .SolvedP}}Solved{{else}}<a href="/a/{{.ActID}}/"><b>Unsolved</b></a>{{end}}
     {{else}}
     <tr><td>??? <td>???
     {{end}}

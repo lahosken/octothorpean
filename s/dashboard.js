@@ -13,8 +13,9 @@ var fillUI = function(obj) {
             var tm = '' + d.getMinutes()
 			if (tm.length < 2) { tm = '0' + tm; }
             var t = '' + d.getHours() + ':' + tm;
-			if (el['T'] < prevDateTime + (60 * 60 * 12)) {
+			if ((!prevDateTime) || el['T'] < prevDateTime - (60 * 60 * 12 * 1000)) {
 				t = '' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + t;
+				prevDateTime = el['T'];
 			}
 			ar.push('<li><small>' + t + '</small> ' + el['M'])
 		}

@@ -240,7 +240,7 @@ func newBadges(actTags []string, points map[string]int, already map[string] int)
 	// The not-uncommon types
 	var ratios = map[string]int {
 		"5bit": 2,
-		"a1": 2,
+		"a1": 3,
 		"anagram": 2,
 		"braille": 2,
 		"cipher": 2,
