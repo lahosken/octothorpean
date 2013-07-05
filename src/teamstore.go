@@ -7,7 +7,7 @@ package octo
 import (
 	"appengine"
 	"appengine/datastore"
-//    "log"
+	//    "log"
 	"time"
 )
 
@@ -41,9 +41,9 @@ type TLogRecord struct {
 	TeamID  string
 	ActID   string
 	Verb    string // "reg", "login", "guess", "hint", "resetpsswd", ...
-	Guess   string
-	Hint    int
-	Notes   string
+	Guess   string `datastore:",noindex"`
+	Hint    int    `datastore:",noindex"`
+	Notes   string `datastore:",noindex"`
 }
 
 func TLog(context appengine.Context, teamID string, actID string, verb string, notes string) error {
@@ -56,12 +56,12 @@ func TLog(context appengine.Context, teamID string, actID string, verb string, n
 	}
 	_, err := datastore.Put(context, datastore.NewIncompleteKey(context, "TLog", nil), &t)
 	// update team.LastSeen
-    if (err == nil && verb == "login") {
-        datastore.RunInTransaction(context, func(c appengine.Context) error {
+	if err == nil && verb == "login" {
+		datastore.RunInTransaction(context, func(c appengine.Context) error {
 			key := datastore.NewKey(context, "Team", teamID, 0, nil)
-   			tr := TeamRecord{}
+			tr := TeamRecord{}
 			err := datastore.Get(context, key, &tr)
-			if (err == nil) {
+			if err == nil {
 				tr.LastSeen = time.Now()
 				_, err = datastore.Put(context, key, &tr)
 			}
@@ -93,12 +93,12 @@ func TLogGuess(context appengine.Context, teamID string, actID string, verb stri
 	// update team.LastSeen. But (hack) not if team solved, because in
 	// that case, we're about to spend a lot of time writing other things
 	// to datastore. And team.LastSeen doesn't need to be super-accurate
-    if (err == nil && verb != "solve") {
-        datastore.RunInTransaction(context, func(c appengine.Context) error {
+	if err == nil && verb != "solve" {
+		datastore.RunInTransaction(context, func(c appengine.Context) error {
 			key := datastore.NewKey(context, "Team", teamID, 0, nil)
-   			tr := TeamRecord{}
+			tr := TeamRecord{}
 			err := datastore.Get(context, key, &tr)
-			if (err == nil) {
+			if err == nil {
 				tr.LastSeen = time.Now()
 				_, err = datastore.Put(context, key, &tr)
 			}
@@ -140,7 +140,7 @@ func TLogCountRecentGuesses(context appengine.Context, teamId string) int {
 }
 
 func CleanupTeamLogs(context appengine.Context) {
-  // TODO
+	// TODO
 }
 
 // Given a team and a set of acts, determine which acts the team
@@ -163,24 +163,24 @@ func GetLockedActs(context appengine.Context, tid string, actIDs []string) []str
 
 // If team has not already unlocked this act, then unlock it
 func UnlockAct(context appengine.Context, tid string, actID string) {
-		tas := TAStateRecord{}
-		key := datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
-		datastore.Get(context, key, &tas)
-		if tas.TeamID == "" {
-			tas.TeamID = tid
-			tas.ActID = actID
-			tas.SolvedP = false
-			tas.Hints = 0
-		}
-		datastore.Put(context, key, &tas)
+	tas := TAStateRecord{}
+	key := datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
+	datastore.Get(context, key, &tas)
+	if tas.TeamID == "" {
+		tas.TeamID = tid
+		tas.ActID = actID
+		tas.SolvedP = false
+		tas.Hints = 0
+	}
+	datastore.Put(context, key, &tas)
 }
 
 // Sometimes, GC wants a "spreadsheety" view of teams instead of a "log/diary"
 // view.
 type SummaryElement struct {
-	SolvedP bool
+	SolvedP   bool
 	SolveTime time.Time
-	Hints int
+	Hints     int
 }
 
 func SummarizeLogs(context appengine.Context) (t map[string](map[string]*SummaryElement)) {
@@ -191,27 +191,27 @@ func SummarizeLogs(context appengine.Context) (t map[string](map[string]*Summary
 		Filter("Created >", time.Now().Add(time.Hour*time.Duration(-999))).
 		Order("-Created")
 	for iter := q.Run(context); ; {
-        var tlr TLogRecord
-        _, err := iter.Next(&tlr)
-        if err != nil {
+		var tlr TLogRecord
+		_, err := iter.Next(&tlr)
+		if err != nil {
 			break
-        }
-		if (len(t[tlr.TeamID]) == 0) {
+		}
+		if len(t[tlr.TeamID]) == 0 {
 			t[tlr.TeamID] = map[string]*SummaryElement{}
 		}
 		_, ok := t[tlr.TeamID][tlr.ActID]
-		if (!ok) {
+		if !ok {
 			t[tlr.TeamID][tlr.ActID] = new(SummaryElement)
 		}
-		if (tlr.Verb == "hint") {
+		if tlr.Verb == "hint" {
 			if t[tlr.TeamID][tlr.ActID].Hints < tlr.Hint {
 				t[tlr.TeamID][tlr.ActID].Hints = tlr.Hint
 			}
 		}
-		if (tlr.Verb == "solve") {
+		if tlr.Verb == "solve" {
 			t[tlr.TeamID][tlr.ActID].SolvedP = true
 			t[tlr.TeamID][tlr.ActID].SolveTime = tlr.Created
 		}
-    }
+	}
 	return
 }

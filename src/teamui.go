@@ -73,14 +73,14 @@ func login(w http.ResponseWriter, r *http.Request) {
 func showNoSuchTeam(w http.ResponseWriter, r *http.Request, context appengine.Context, tid string) {
 	similars := getTeamIDsSimilarTo(context, tid, 5)
 	template.Must(template.New("").Parse(tLoginFailedNoSuchTeam)).Execute(w, MapSI{
-			"PageTitle": "No such team.",
-			"Team":      tid,
-			// TODO is there an URL-escape in template? (not yet, but someday?)
-			"Description": url.QueryEscape(tid),
-			"Similars":    similars,
-			"TID":         "",
-			"TeamURL":     url.QueryEscape(r.FormValue("team")),
-		})
+		"PageTitle": "No such team.",
+		"Team":      tid,
+		// TODO is there an URL-escape in template? (not yet, but someday?)
+		"Description": url.QueryEscape(tid),
+		"Similars":    similars,
+		"TID":         "",
+		"TeamURL":     url.QueryEscape(r.FormValue("team")),
+	})
 }
 
 func redirToTopPage(w http.ResponseWriter) {
@@ -178,7 +178,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	announceok := 0
-	if (r.FormValue("announceok") != "") {
+	if r.FormValue("announceok") != "" {
 		announceok = 1
 	}
 
@@ -188,7 +188,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 		LastSeen:    time.Now(),
 		EmailList:   emailList,
 		Password:    generateRandomPassword(),
-     	AnnounceOK:  announceok,
+		AnnounceOK:  announceok,
 		Description: description}
 	_, err = datastore.Put(context, key, &newTeamRecord)
 	if err != nil {
@@ -223,7 +223,7 @@ Login at http://octothorpean.org/loginprompt?team=%s
 		return
 	}
 	showMessage(w, "Check your mail!",
-		"Account created! Check your mail for the password.", "", 
+		"Account created! Check your mail for the password.", "",
 		fmt.Sprintf("/loginprompt?team=%s", url.QueryEscape(newTeamRecord.ID)))
 }
 
@@ -379,7 +379,7 @@ func editteam(w http.ResponseWriter, r *http.Request) {
 		description = description[:150]
 	}
 	announceok := 0
-	if (r.FormValue("announceok") != "") {
+	if r.FormValue("announceok") != "" {
 		announceok = 1
 	}
 	t.EmailList = emailList
@@ -419,10 +419,10 @@ func teamprofile(w http.ResponseWriter, r *http.Request) {
 			tid, "")
 		return
 	}
-    type badgedisplayinfo struct {
-		Name string
-		Pretty string
-		Level int
+	type badgedisplayinfo struct {
+		Name        string
+		Pretty      string
+		Level       int
 		Description string
 	}
 	var teamBadges = map[string]int{}
@@ -431,11 +431,13 @@ func teamprofile(w http.ResponseWriter, r *http.Request) {
 	var badgeDisplayInfo = []badgedisplayinfo{}
 	for badge, level := range teamBadges {
 		// Don't show legacy badges. Detectable since they're not in map:
-		if badgeBling[badge].Pretty == "" { continue }
+		if badgeBling[badge].Pretty == "" {
+			continue
+		}
 		badgeDisplayInfo = append(badgeDisplayInfo, badgedisplayinfo{
-			Name: badge, 
-			Pretty: badgeBling[badge].Pretty,
-			Level: level, 
+			Name:        badge,
+			Pretty:      badgeBling[badge].Pretty,
+			Level:       level,
 			Description: badgeBling[badge].Description,
 		})
 	}

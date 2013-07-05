@@ -50,7 +50,8 @@ func adminmenu(w http.ResponseWriter, r *http.Request) {
                         </form>`)
 	} else {
 		fmt.Fprintf(w, `Hello, %s!<ul>
-          <li><a href="/admin/teamspreadsheet.tsv?arc=mendy">&quot;Spreadsheet&quot; view</a>
+          <li><a href="/admin/gossip">Gossip/Dashboard</a> / <a href="/admin/logs">Logs</a>
+          <li><a href="/admin/teamspreadsheet.tsv?arc=demo">&quot;Spreadsheet&quot; view</a>
           <li><a href="/admin/uploadprompt">Upload Activity or Arc</a>
           <li><a href="/admin/editadmin">Create/Edit Admin Accounts</a>
           </ul>`, html.EscapeString(aid))
@@ -131,7 +132,7 @@ func adminuploadprompt(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	template.Must(template.New("").Parse(tUploadActPrompt)).Execute(w, MapSI {
+	template.Must(template.New("").Parse(tUploadActPrompt)).Execute(w, MapSI{
 		"PageTitle": "Upload",
 		"UploadURL": uploadURL,
 		"AID":       aid,
@@ -154,12 +155,14 @@ func adminteamspreadsheet(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "\n")
 	for teamID, _ := range m {
-		if teamID == "" { continue }
-		fmt.Fprintf(w, "%s\t",  teamID)
+		if teamID == "" {
+			continue
+		}
+		fmt.Fprintf(w, "%s\t", teamID)
 		for _, actID := range arc.Act {
 			summ, ok := m[teamID][actID]
 			if ok && summ.SolvedP {
-				fmt.Fprintf(w, "%s\t%d\t",  m[teamID][actID].SolveTime, m[teamID][actID].Hints)
+				fmt.Fprintf(w, "%s\t%d\t", m[teamID][actID].SolveTime, m[teamID][actID].Hints)
 			} else {
 				fmt.Fprintf(w, "X\tX\t")
 			}
@@ -260,49 +263,57 @@ func ReadPuzTxt(context appengine.Context, f *zip.File, act *ActivityRecord) {
 		}
 		if strings.HasPrefix(line, "TAGS") {
 			rawtags := strings.Split(strings.TrimSpace(line[4:]), ",")
-			var already = map[string] bool{}
-			var implied = map[string] []string {
-				"5bit": { "numeric", "code" },
-				"7segment": { "electronic" },
-				"a1" : { "numeric", "code" },
-				"anagram": { "word" },
-				"braille": { "code" },
-				"crossword": { "word" },
-				"dropquote": { "word" },
-				"fillomino": { "nikoli", "logic" },
-				"hashi": { "nikoli", "logic" },
-				"indexing": { "numeric" }, 
-				"masyu": { "nikoli", "logic" },
-				"morse": { "code" },
-				"nonogram": { "conceptis", "logic" },
-				"phonespell": { "electronic" },
-				"pigpen" : { "code" },
-				"riddles": { "popculture" },
-				"semaphore": { "code", "flags" },
-				"shikaku": { "nikoli", "logic" },
-				"slitherlink": { "nikoli", "logic" },
-				"sudoku": { "logic" },
-				"tentaishow": { "nikoli", "logic" },
-				"tv": { "popculture" },
-				"wordsearch": { "word" },
+			var already = map[string]bool{}
+			var implied = map[string][]string{
+				"5bit":        {"numeric", "code"},
+				"7segment":    {"electronic"},
+				"a1":          {"numeric", "code"},
+				"anagram":     {"word"},
+				"braille":     {"code"},
+				"crossword":   {"word"},
+				"dropquote":   {"word"},
+				"fillomino":   {"nikoli", "logic"},
+				"hashi":       {"nikoli", "logic"},
+				"indexing":    {"numeric"},
+				"masyu":       {"nikoli", "logic"},
+				"morse":       {"code"},
+				"nonogram":    {"conceptis", "logic"},
+				"phonespell":  {"electronic"},
+				"pigpen":      {"code"},
+				"riddles":     {"popculture"},
+				"semaphore":   {"code", "flags"},
+				"shikaku":     {"nikoli", "logic"},
+				"slitherlink": {"nikoli", "logic"},
+				"sudoku":      {"logic"},
+				"tentaishow":  {"nikoli", "logic"},
+				"tv":          {"popculture"},
+				"wordsearch":  {"word"},
 			}
 			for _, tag := range act.Tags {
 				already[tag] = true
 			}
 			for _, rawtag := range rawtags {
 				tag := scrunch(rawtag)
-				if tag == "" { continue }
-				if already[tag] { continue }
+				if tag == "" {
+					continue
+				}
+				if already[tag] {
+					continue
+				}
 				already[tag] = true
 				for _, subtag := range implied[tag] {
-					if already[subtag] { continue }
+					if already[subtag] {
+						continue
+					}
 					already[subtag] = true
 				}
 			}
-			if !already["act"] { act.Tags = append(act.Tags, "act") }
+			if !already["act"] {
+				act.Tags = append(act.Tags, "act")
+			}
 			already["act"] = true
 			act.Tags = []string{}
-			for tag, _ := range(already) {
+			for tag, _ := range already {
 				act.Tags = append(act.Tags, tag)
 			}
 		}
@@ -556,6 +567,84 @@ func ALog(context appengine.Context, aid string, verb string, notes string) erro
 	return err
 }
 
+func adminlogs(w http.ResponseWriter, r *http.Request) {
+	context := appengine.NewContext(r)
+	team := r.FormValue("team")
+	act := r.FormValue("act")
+	verb := r.FormValue("verb")
+	filters := []string{}
+	tableheader := "<tr>"
+	if team == "" {
+		tableheader = tableheader + "<th>Team"
+	} else {
+		filters = append(filters, "team = "+team)
+	}
+	if act == "" {
+		tableheader = tableheader + "<th>Act"
+	} else {
+		filters = append(filters, "act = "+act)
+	}
+	if verb == "" {
+		tableheader = tableheader + "<th>Verb"
+	} else {
+		filters = append(filters, "verb = "+verb)
+	}
+	tableheader = tableheader + "<th>Guess <th>#/Notes <th>Created"
+	rows := []string{}
+	q := datastore.NewQuery("TLog").Order("-Created")
+	// filter on team or verb, but not both. (why not both? I'm too miserly
+	// to create another index for such rarely-used queries)
+	if team != "" {
+		q = q.Filter("TeamID=", team)
+	} else if verb != "" {
+		q = q.Filter("Verb=", verb)
+	}
+	for iter := q.Run(context); ; {
+		var tlr TLogRecord
+		_, err := iter.Next(&tlr)
+		if err != nil {
+			break
+		}
+		row := "<tr>"
+		if team == "" {
+			row = row + "<td>" + template.HTMLEscapeString(tlr.TeamID)
+		} else {
+			if tlr.TeamID != team {
+				continue
+			}
+		}
+		if act == "" {
+			row = row + "<td>" + tlr.ActID
+		} else {
+			if tlr.ActID != act {
+				continue
+			}
+		}
+		if verb == "" {
+			row = row + "<td>" + tlr.Verb
+		} else {
+			if tlr.Verb != verb {
+				continue
+			}
+		}
+		note := ""
+		if tlr.Hint > 0 {
+			note = fmt.Sprintf("%d %s", tlr.Hint, tlr.Notes)
+		} else {
+			note = tlr.Notes
+		}
+		row = row + fmt.Sprintf("<td>%s <td>%s <td><span class=\"date\">%s</span>",
+			tlr.Guess, note, tlr.Created)
+		rows = append(rows, row)
+	}
+	template.Must(template.New("").Parse(tAdminLogs)).Execute(w, MapSI{
+		"PageTitle":   "Admin / Logs",
+		"Filters":     filters,
+		"TableHeader": tableheader,
+		"Rows":        rows,
+	})
+}
+
 func admingossip(w http.ResponseWriter, r *http.Request) {
 	template.Must(template.New("").Parse(tAdminGossip)).Execute(w, struct {
 		PageTitle string
@@ -565,10 +654,10 @@ func admingossip(w http.ResponseWriter, r *http.Request) {
 }
 
 func admingossipjson(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "text/javascript")
-    aid := checkAdminLogin(w, r);
-    if (aid == "") { 
-		fmt.Fprintf(w, `alert("Not logged in!");`);
+	w.Header().Set("Content-Type", "text/javascript")
+	aid := checkAdminLogin(w, r)
+	if aid == "" {
+		fmt.Fprintf(w, `alert("Not logged in!");`)
 		return
 	}
 	context := appengine.NewContext(r)
@@ -580,13 +669,13 @@ func admingossipjson(w http.ResponseWriter, r *http.Request) {
 			html.EscapeString(tlr.TeamID))
 		a := fmt.Sprintf(`<a href="/a/%s/">%s</a>`,
 			html.EscapeString(tlr.ActID), html.EscapeString(tlr.ActID))
-		v := tlr.Verb;
-        g := html.EscapeString(tlr.Guess)
-        n := html.EscapeString(tlr.Notes)
+		v := tlr.Verb
+		g := html.EscapeString(tlr.Guess)
+		n := html.EscapeString(tlr.Notes)
 		l = append(l, tidbit{
 			T: tlr.Created.Unix() * 1000,
 			M: fmt.Sprintf(`%s %s %s %s %s`, t, v, a, g, n),
 		})
 	}
-	spewjsonp(w, r, map[string](interface{}) { "gossip": l })
+	spewjsonp(w, r, map[string](interface{}){"gossip": l})
 }

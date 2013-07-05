@@ -11,8 +11,8 @@ import (
 	"html"
 	"net/http"
 	"net/url"
-	"text/template"
 	"strings"
+	"text/template"
 	"time"
 )
 
@@ -70,13 +70,13 @@ func gossip(w http.ResponseWriter, r *http.Request) {
 		}
 		t := "Your team"
 		a := fmt.Sprintf(`<a href="/a/%s/">%s</a>`,
-			 html.EscapeString(tlr.ActID), html.EscapeString(tlr.ActID))
+			html.EscapeString(tlr.ActID), html.EscapeString(tlr.ActID))
 		if tlr.TeamID != tid {
 			t = fmt.Sprintf(`Team <a href="/team/%s">%s</a>`,
 				html.EscapeString(url.QueryEscape(url.QueryEscape(tlr.TeamID))),
 				html.EscapeString(tlr.TeamID))
 			if tlr.ActID != r.FormValue("act") {
-				a = "something" + strings.Repeat(" ", len(tlr.ActID) % 4)
+				a = "something" + strings.Repeat(" ", len(tlr.ActID)%4)
 			}
 		}
 		n := ""
@@ -119,7 +119,7 @@ func gossip(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-    spewjsonp(w, r, map[string](interface{}) { "gossip": l })
+	spewjsonp(w, r, map[string](interface{}){"gossip": l})
 }
 
 // Get gossip for one team. Handy for displaying on their profile page.
@@ -137,7 +137,7 @@ func getTeamGossip(context appengine.Context, tid string) (out []tidbit) {
 			break
 		}
 		// TODO
-			a := "something"  + strings.Repeat(" ", len(tlr.ActID) % 4)
+		a := "something" + strings.Repeat(" ", len(tlr.ActID)%4)
 		// ideally, we'd be specific if viewing-team
 		// knew of puzzle's existence and say "something" if viewing-team
 		// didn't know of puzzle's existence. TODO

@@ -9,6 +9,7 @@ import shutil
 MANIFEST = """
 cron.yaml
 app.yaml
+index.yaml
 queue.yaml
 src/activity.go
 src/admin.go

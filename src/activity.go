@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-//	"log"
+	//	"log"
 	"mime"
 	"net/http"
 	"path"
@@ -63,7 +63,7 @@ type OneArc struct {
 }
 
 // return nicely JSONicable map of team's state in some arcs
-func arcmaps(context appengine.Context, tid string, arcs []string) (map[string]OneArc) {
+func arcmaps(context appengine.Context, tid string, arcs []string) map[string]OneArc {
 	m := map[string]OneArc{}
 	// if anyone ever wants multiple arcs, fetching state records for
 	// one arc at a time is kina slow.
@@ -101,7 +101,7 @@ func arcjson(w http.ResponseWriter, r *http.Request) {
 func arc(w http.ResponseWriter, r *http.Request) {
 	_, tid := GetAndOrUpdateSession(w, r)
 	if tid == "" {
-		showMessage(w, "Go back", "These \"arc\" pages aren't much use unless you're logged in--they help you keep track of which activitieses you've completed.", tid, "")
+		showMessage(w, "Go back", "These \"arc\" pages aren't much use unless you're logged in--they help you keep track of which activities you've completed.", tid, "")
 		return
 	}
 	context := appengine.NewContext(r)
@@ -125,9 +125,9 @@ func arc(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.New("").Parse(tArc))
 	t.Execute(w, MapSI{
 		"PageTitle": arc.Title,
-		"TID": tid,
-		"Arc": arc,
-		"States": states,
+		"TID":       tid,
+		"Arc":       arc,
+		"States":    states,
 	})
 }
 
@@ -187,21 +187,21 @@ func showActPage(w http.ResponseWriter, r *http.Request, session *Session, tid s
 	guesstoken := session.actionToken("guess " + actID)
 	hinttoken := session.actionToken("hint " + actID)
 	t.Execute(w, MapSI{
-		"Nickname":    actID,
-		"PageTitle":   "Activity: " + act.Title,
-		"TID":         tid,
-		"GuessToken":  guesstoken,
-		"HintToken":   hinttoken,
-		"Title":       act.Title,
-		"URL":         act.URL,
-		"Guts":        template.HTML(string(act.Guts)),
+		"Nickname":   actID,
+		"PageTitle":  "Activity: " + act.Title,
+		"TID":        tid,
+		"GuessToken": guesstoken,
+		"HintToken":  hinttoken,
+		"Title":      act.Title,
+		"URL":        act.URL,
+		"Guts":       template.HTML(string(act.Guts)),
 		"ActInitJSON": MapSI{
 			"hints": act.Hints[:tas.Hints],
 		},
-		"SolvedP":     tas.SolvedP,
-		"Solution":    strings.ToUpper(act.Solutions[0]),
-		"Icon":        actgeticonurl(context, actID),
-		"IconLink":    actgeticonlink(context, actID),
+		"SolvedP":  tas.SolvedP,
+		"Solution": strings.ToUpper(act.Solutions[0]),
+		"Icon":     actgeticonurl(context, actID),
+		"IconLink": actgeticonlink(context, actID),
 	})
 }
 
@@ -322,102 +322,104 @@ func handleCorrectGuess(w http.ResponseWriter, r *http.Request, tid string, cont
 			nextacts = nextacts + "<br><br>If you <a href=\"/loginprompt\">log in</a>, the game can keep track of what you've solved<br>(instead of asking you to re-solve puzzles)"
 		}
 	}
-	feedback := "You solved it! Solution was " + strings.ToUpper(act.Solutions[0])+nextacts
+	feedback := "You solved it! Solution was " + strings.ToUpper(act.Solutions[0]) + nextacts
 	var newbadges = map[string]int{}
-	key := datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
 	tas := TAStateRecord{}
-	datastore.Get(context, key, &tas)
-	if !tas.SolvedP {
-		TLogGuess(context, tid, actID, "solve", guess)
-        // replaced with a PutMulti
-		// tas.TeamID = tid
-		// tas.ActID = actID
-		// tas.SolvedP = true
-		// _, err := datastore.Put(context, key, &tas)
-		// if err != nil {
-		// 	context.Warningf("Solved but I forgot T %s A %s ERR %s",
-		// 		tid, actID, err.Error())
-		// }
-		datastore.RunInTransaction(context, func(c appengine.Context) (err error) {
-					key := datastore.NewKey(context, "Team", tid, 0, nil)
-			t := TeamRecord{}
-			err = datastore.Get(context, key, &t)
-			if err != nil { 
-				TLog(context, tid, actID, "gypped", "noload")
-				return 
-			}
-			dec := json.NewDecoder(strings.NewReader(t.Tags))
-			var points = map[string]int{}
-			dec.Decode(&points)
-			for _, tag := range act.Tags {
-				points[tag] = points[tag] + 1
-			}
-			jsonbytes, err := json.Marshal(points)
-			if err != nil { 
-				TLog(context, tid, actID, "gypped", "marshalpoints")
-				return 
-			}
-			t.Tags = string(jsonbytes)
-			dec = json.NewDecoder(strings.NewReader(t.Badges))
-			var badges = map[string]int{}
-			dec.Decode(&badges)
-			ephemeralNewBadges := newBadges(act.Tags, points, badges)
-			if len(ephemeralNewBadges) > 0 {
-				for k, v := range ephemeralNewBadges {
-					badges[k] = v
+	teamkey := datastore.NewKey(context, "Team", tid, 0, nil)
+	takey := datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
+	if tid != "" {
+		datastore.Get(context, takey, &tas)
+		if !tas.SolvedP {
+			TLogGuess(context, tid, actID, "solve", guess)
+			// replaced with a PutMulti
+			// tas.TeamID = tid
+			// tas.ActID = actID
+			// tas.SolvedP = true
+			// _, err := datastore.Put(context, key, &tas)
+			// if err != nil {
+			// 	context.Warningf("Solved but I forgot T %s A %s ERR %s",
+			// 		tid, actID, err.Error())
+			// }
+			datastore.RunInTransaction(context, func(c appengine.Context) (err error) {
+				t := TeamRecord{}
+				teamkey = datastore.NewKey(context, "Team", tid, 0, nil)
+				err = datastore.Get(context, teamkey, &t)
+				if err != nil {
+					TLog(context, tid, actID, "gypped", fmt.Sprintf("noload %s", err))
+					return
 				}
-				jsonbytes, err = json.Marshal(badges)
-				if err != nil { 
-					TLog(context, tid, actID, "gypped", "marshalbadge")
-					return 
+				dec := json.NewDecoder(strings.NewReader(t.Tags))
+				var points = map[string]int{}
+				dec.Decode(&points)
+				for _, tag := range act.Tags {
+					points[tag] = points[tag] + 1
 				}
-				t.Badges = string(jsonbytes)
-			}
-			_, err = datastore.Put(context, key, &t)
-			if err != nil {
-				TLog(context, tid, actID, "gypped", "put")
+				jsonbytes, err := json.Marshal(points)
+				if err != nil {
+					TLog(context, tid, actID, "gypped", "marshalpoints")
+					return
+				}
+				t.Tags = string(jsonbytes)
+				dec = json.NewDecoder(strings.NewReader(t.Badges))
+				var badges = map[string]int{}
+				dec.Decode(&badges)
+				ephemeralNewBadges := newBadges(act.Tags, points, badges)
+				if len(ephemeralNewBadges) > 0 {
+					for k, v := range ephemeralNewBadges {
+						badges[k] = v
+					}
+					jsonbytes, err = json.Marshal(badges)
+					if err != nil {
+						TLog(context, tid, actID, "gypped", "marshalbadge")
+						return
+					}
+					t.Badges = string(jsonbytes)
+				}
+				_, err = datastore.Put(context, teamkey, &t)
+				if err != nil {
+					TLog(context, tid, actID, "gypped", "put")
+					return
+				}
+				newbadges = ephemeralNewBadges
 				return
+			}, nil)
+		}
+		if len(newbadges) > 0 {
+			feedback = feedback + "<p>&nbsp;<p>You earned "
+			if len(newbadges) == 1 {
+				feedback = feedback + "a merit badge!"
+			} else {
+				feedback = feedback + "merit badges!"
 			}
-			newbadges = ephemeralNewBadges
-			return
-		} , nil)
-	}
-	if len(newbadges) > 0 {
-		feedback = feedback + "<p>&nbsp;<p>You earned "
-		if len(newbadges) == 1 {
-			feedback = feedback + "a merit badge!"
-		} else {
-			feedback = feedback + "merit badges!"
-		}
-		for badge, level := range newbadges {
-			TLog(context, tid, actID, "badge", badge)
-			feedback = feedback + fmt.Sprintf(`<p>Earned <a target="_blank" href="/b/%s">%s</a> level %d! `, badge, badgeBling[badge].Pretty, level)
+			for badge, level := range newbadges {
+				TLog(context, tid, actID, "badge", badge)
+				feedback = feedback + fmt.Sprintf(`<p>Earned <a target="_blank" href="/b/%s">%s</a> level %d! `, badge, badgeBling[badge].Pretty, level)
+			}
 		}
 	}
-	spewjsonp(w, r, map[string](interface{}) {
+	spewjsonp(w, r, map[string](interface{}){
 		"feedback": feedback,
 		"nextacts": actgetnext(context, actID),
 	})
-	if (tid != "") {
+	if tid != "" {
 		var keys []*datastore.Key
 		var tass []TAStateRecord
-		if (!tas.SolvedP) {
-			keys = append(keys, key)
+		if !tas.SolvedP {
+			keys = append(keys, takey)
 			tas.TeamID = tid
 			tas.ActID = actID
 			tas.SolvedP = true
 			tass = append(tass, tas)
 		}
-		for _, nextact := 
-			range GetLockedActs(context, tid, actgetnext(context, actID)) {
-			keys = append(keys, 
+		for _, nextact := range GetLockedActs(context, tid, actgetnext(context, actID)) {
+			keys = append(keys,
 				datastore.NewKey(context, "TAState", nextact+":"+tid, 0, nil))
-			tass = append(tass, TAStateRecord{ tid, nextact, false, 0 })
+			tass = append(tass, TAStateRecord{tid, nextact, false, 0})
 		}
 		_, err := datastore.PutMulti(context, keys, tass)
 		if err != nil {
- 			context.Warningf("Solved but I forgot something T %s A %s ERR %s",
- 			tid, actID, err.Error())
+			context.Warningf("Solved but I forgot something T %s A %s ERR %s",
+				tid, actID, err.Error())
 		}
 	}
 }
@@ -472,7 +474,7 @@ func hint(w http.ResponseWriter, r *http.Request) {
 		act.Hints[len(act.Hints)-1] += " <i>This is the last hint.</i>"
 	}
 	TLogHint(context, tid, actID, tas.Hints)
-	spewjsonp(w, r, map[string](interface{}) {
+	spewjsonp(w, r, map[string](interface{}){
 		"hints": act.Hints[:tas.Hints],
 	})
 }

@@ -4,11 +4,12 @@ import (
 	"appengine"
 	"encoding/json"
 	"fmt"
-//  "log"
+	//  "log"
 	"net/http"
 	"strings"
 	"text/template"
 	"unicode"
+
 //	"github.com/mjibson/appstats"
 )
 
@@ -17,10 +18,10 @@ func init() {
 	http.HandleFunc("/", topscreen)
 	// activities and groups of activities
 	// http.HandleFunc("/a/", activity)
-    http.HandleFunc("/a/", activity)
+	http.HandleFunc("/a/", activity)
 	http.HandleFunc("/arc/", arc)
 	http.HandleFunc("/arc.json", arcjson)
-    http.HandleFunc("/guess", guess)
+	http.HandleFunc("/guess", guess)
 	http.HandleFunc("/hint", hint)
 	http.HandleFunc("/atokens", atokens)
 	http.HandleFunc("/b/", badgeprofile)
@@ -40,6 +41,7 @@ func init() {
 	http.HandleFunc("/admin/", adminmenu)
 	http.HandleFunc("/admin/gossip", admingossip)
 	http.HandleFunc("/admin/gossip.json", admingossipjson)
+	http.HandleFunc("/admin/logs", adminlogs)
 	http.HandleFunc("/admin/login", adminlogin)
 	http.HandleFunc("/admin/upload", adminupload)
 	http.HandleFunc("/admin/digestupload", digestupload)
@@ -132,7 +134,7 @@ func scrunch(s string) string {
 // Given an interface, JSON it perhaps wrapped in a callback function
 func spewjsonp(w http.ResponseWriter, r *http.Request, v interface{}) {
 	j, _ := json.MarshalIndent(v, " ", "  ")
-    js := string(j)
+	js := string(j)
 	if r.FormValue("callback") != "" {
 		js = r.FormValue("callback") + "(" + js + ")"
 	}
