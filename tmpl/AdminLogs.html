@@ -10,7 +10,7 @@
 <p>Filters:
 <ul>
 {{range .Filters}}
-  <li>{{.}}
+  <li>{{. | html}}
 {{end}}
 </ul>
 {{end}}

@@ -568,6 +568,11 @@ func ALog(context appengine.Context, aid string, verb string, notes string) erro
 }
 
 func adminlogs(w http.ResponseWriter, r *http.Request) {
+	aid := checkAdminLogin(w, r)
+	if aid == "" {
+		fmt.Fprintf(w, `alert("Not logged in!");`)
+		return
+	}
 	context := appengine.NewContext(r)
 	team := r.FormValue("team")
 	act := r.FormValue("act")
@@ -591,7 +596,7 @@ func adminlogs(w http.ResponseWriter, r *http.Request) {
 	}
 	tableheader = tableheader + "<th>Guess <th>#/Notes <th>Created"
 	rows := []string{}
-	q := datastore.NewQuery("TLog").Order("-Created")
+	q := datastore.NewQuery("TLog").Order("-Created").Limit(500)
 	// filter on team or verb, but not both. (why not both? I'm too miserly
 	// to create another index for such rarely-used queries)
 	if team != "" {
