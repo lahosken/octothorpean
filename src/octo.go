@@ -19,6 +19,7 @@ func init() {
 	// activities and groups of activities
 	// http.HandleFunc("/a/", activity)
 	http.HandleFunc("/a/", activity)
+	http.HandleFunc("/fakeowl/", actowl)
 	http.HandleFunc("/arc/", arc)
 	http.HandleFunc("/arc.json", arcjson)
 	http.HandleFunc("/guess", guess)
