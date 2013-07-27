@@ -88,6 +88,11 @@ var badgeBling = map[string]BadgeBling{
         of the <a href="/b/conspiracy">Conspiracy</a>. Each
         Guardian lurks behind several puzzles.`,
 	},
+	"lax": {
+		"Los Angeles",
+		`You earn this badge by solving puzzles set in Los Angeles,
+         California.`,
+	},
 	"location": {
 		"Location, Location, Location",
 		`You earn this badge by going places.`,
@@ -98,7 +103,44 @@ var badgeBling = map[string]BadgeBling{
 	},
 	"lumber": {
 		"Lumber",
-		`It wood be nice.`,
+		`Wood-related puzzles. A set of these form a "sneak preview"<br>
+         mini puzzle-hunt. 
+
+			<div style="float: right; margin: 0.5em; padding: 0.5em; ">
+These excellent teams completed the hunt<br>
+         within a couple of hours of its opening:
+<ul>
+<li><a href="/team/Different Assembly, Same House">Different Assembly, Same House</a>
+<li><a href="/team/Tumbo the Alpaca">Tumbo the Alpaca</a>
+<li><a href="/team/thepuzzleoverground">thepuzzleoverground</a>
+<li><a href="/team/Maso">Maso</a>
+<li><a href="/team/Anonymice">Anonymice</a>
+<li><a href="/team/Some Regents">Some Regents</a>
+<li><a href="/team/Walkin' 'Fish">Walkin' 'Fish</a>
+<li><a href="/team/EggandI">EggandI</a>
+<li><a href="/team/katevic">katevic</a>
+<li><a href="/team/Lowest Common Denominator">Lowest Common Denominator</a>
+<li><a href="/team/WandT">WandT</a>
+<li><a href="/team/Pavalavavalavich">Pavalavavalavich</a>
+<li><a href="/team/Natural 20s">Natural 20s</a>
+<li><a href="/team/Ficus">Ficus</a>
+<li><a href="/team/WhatTimeIsIt">WhatTimeIsIt</a>
+<li><a href="/team/Delta Mavericks">Delta Mavericks</a>
+<li><a href="/team/%2Fdev%2Fjoe">/dev/joe</a>
+<li><a href="/team/Judean Gnus">Judean Gnus</a>
+<li><a href="/team/MANDATORY FUN GROUP">MANDATORY FUN GROUP</a>
+<li><a href="/team/Riddler on the Roof">Riddler on the Roof</a>
+<li><a href="/team/Friday the 13th Part VI">Friday the 13th Part VI</a>
+<li><a href="/team/chibby">chibby</a>
+<li><a href="/team/Cluefenshmirtz Evil Inc.">Cluefenshmirtz Evil Inc.</a>
+<li><a href="/team/Tahnan">Tahnan</a>
+</ul>
+
+<p>&hellip;and extra-special thanks to teams<br>
+<a href="/team/Small%20Subset%20of%20DRT">Small Subset of DRT</a> and<br>
+<a href="/team/Adventure">Adventure</a> for playtesting!
+</div>
+`,
 	},
 	"meta": {
 		"Metapuzzles",
@@ -233,11 +275,12 @@ func newBadges(actTags []string, points map[string]int, already map[string]int) 
 		"playtest": 1, // not really an org, but this is a handy place
 		"calendar": 1,
 		"nikoli":   2,
-		"npl":      1,
+		// "npl":      1,
 		//		"panda": 2, // never heard back from them
 		"pint": 1,
 		//		"puzzazz": 2, // they don't wanna badge
 		"ravenchase": 1,
+		"lax":        2,
 		"rdu":        2,
 		"sfo":        2,
 	}
@@ -324,7 +367,7 @@ func newBadges(actTags []string, points map[string]int, already map[string]int) 
 // Get gossip for one badge. Handy for displaying on its profile page.
 func getBadgeGossip(context appengine.Context, bid string) (out []tidbit) {
 	alreadySet := make(map[string]bool) // say something once, why say it again?
-	q := datastore.NewQuery("TLog").Order("-Created").Filter("Verb=", "badge").Limit(100)
+	q := datastore.NewQuery("TLog").Order("-Created").Filter("Verb=", "badge").Limit(500)
 	for iter := q.Run(context); ; { // TODO GetAll didn't work in r58
 		var tlr TLogRecord
 		_, err := iter.Next(&tlr)
