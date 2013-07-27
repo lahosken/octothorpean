@@ -87,14 +87,14 @@ $('#guess').keydown(function(e){
 		return sendGuess();
 	}
 });
-$('blanks').replaceWith(function() {
-	var s = $(this)[0].innerText;
+$('blanks').html(function(ix, oldtext) {
+	var s = oldtext;
 	s = s.replace(/\./g, '_');
 	s = s.replace(/O/g, '&#9711;');
 	s = s.replace(/ /g, ' &nbsp; ');
 	s = s.replace(/__/g, '_&nbsp;_');
 	s = s.replace(/__/g, '_&nbsp;_');
-	return '<span class="blanks">' + s + '</span>';
+	return s;
 });
 seekGossip();
 fillUI(initJSON);
