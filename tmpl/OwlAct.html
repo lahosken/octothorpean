@@ -1,0 +1,51 @@
+#wrap:LESS.html#
+#HEAD#
+    <link href="/fakeowl/fakeowlpoc/s.css" rel="stylesheet" type="text/css">
+<script>
+nickname = '{{.Nickname}}'; guesstoken = '{{.GuessToken}}'; hinttoken = '{{.HintToken}}';
+initJSON = {{.ActInitJSON}};
+</script>
+#HEAD#
+#BODY#
+    <center>
+    <div class="titlebar">
+    <img src="/fakeowl/fakeowlpoc/owl_logo.png" alt="OWL">
+    </div>
+
+<p><b>.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.</b><br>
+
+<div id=feedback style="position: fixed; top: 40px; left: 50%; width: 50%; text-align: right;">
+</div>
+
+
+<div>
+ <input type="text" name="guess" id="guess" placeholder="Enter answer...">
+ <a class="btn btn-success" id="guessbutton">Enter</a>
+</div>
+
+
+<b>.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;.</b>
+
+{{.Guts}}
+<div style="margin-left: 50%;">
+  <button id="showhints" href="#hintbox" data-toggle="modal" title="Hints">???</button>
+</div>
+          </center>
+
+<div id="hintbox" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h2>Hints</h2>
+  </div>
+  <div class="modal-body">
+    <ul id=hintlist></ul>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="hintbutton">Hint, please!</button>
+  </div>
+</div>
+
+<script src="/s/activity.js"></script>
+#BODY#
