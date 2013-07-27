@@ -9,6 +9,7 @@ li.bdge a:hover { background-color: black; color: yellow; }
 </style>
 #HEAD#
 #BODY#
+{{if .LogoutPrompt}}<div style="float: right;">{{.LogoutPrompt}}</div>{{end}}
 <h1><a href="/">#</a> Team {{.TeamID|html}}</h1>
 
 {{.Description|html}}

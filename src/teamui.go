@@ -403,6 +403,13 @@ func teamprofile(w http.ResponseWriter, r *http.Request) {
 	// TODO "Stud + Stones" shows up as "Stud+++Stones", and we're not
 	// sure which are spaces and which are plusses.
 	otherTeamID, err := url.QueryUnescape(r.URL.Path[len("/team/"):])
+	logoutPrompt := ""
+	context.Infof("TID         %s x", tid)
+	context.Infof("OTHERTEAMID %s x", otherTeamID)
+    if otherTeamID == tid {
+		logoutPrompt = `<a href="/logout" class="btn">Logout</a>`
+	}
+    context.Infof("logoutPrompt %s", logoutPrompt)
 	if otherTeamID == "" {
 		w.WriteHeader(http.StatusNotFound)
 		showMessage(w, "No such team",
@@ -449,6 +456,7 @@ func teamprofile(w http.ResponseWriter, r *http.Request) {
 		"Description": t.Description,
 		"Gossip":      g,
 		"Badges":      badgeDisplayInfo,
+		"LogoutPrompt": logoutPrompt,
 	})
 }
 

@@ -27,7 +27,7 @@ func init() {
 	http.HandleFunc("/b/", badgeprofile)
 	// team and team-login stuff
 	http.HandleFunc("/team/", teamprofile)
-	http.HandleFunc("/dashboard", dashboard)
+	http.HandleFunc("/whosplaying", dashboard)
 	http.HandleFunc("/loginprompt", loginprompt)
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/logout", logout)

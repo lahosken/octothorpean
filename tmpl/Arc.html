@@ -1,8 +1,10 @@
 #wrap:BASE.html#
 #BODY#
+  <style>th { padding-right: 0.5em; } </style>
   <center style="clear: both;">
   <h1><a href="/">#</a> {{.Arc.Title}}</h1>
   <table><tbody>
+  <tr><th>Activity <th>Status
   {{range .States}}
     <tr>
     {{if .ActID}}

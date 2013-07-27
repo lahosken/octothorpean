@@ -6,6 +6,7 @@ initJSON = {{.ActInitJSON}};
 </script>
 <style>
 .lert { text-align: right; }
+.lert a { color: blue; text-decoration: underline; }
 </style>
 #HEAD#
 #BODY#
@@ -20,12 +21,12 @@ initJSON = {{.ActInitJSON}};
   {{ if and .SolvedP .TID}}<small class="label label-info">(answer is {{ .Solution }})</small>{{ end }}
 
   <button id="showgossip" href="#gossipbox" data-toggle="modal"
-       style="position: absolute; top: 2px; left: 50%;">Gossip</button>
+       style="position: absolute; top: 2px; left: 40%;">Who's Playing?</button>
   <button id="showhints" href="#hintbox" data-toggle="modal"
        style="position: absolute; top: 2px; left: 60%;">Hints</button>
   <input type="text" name="guess" id="guess" placeholder="Enter answer..."
        style="position: absolute; top: 2px; left: 70%; width: 10%;">
-  <a class="btn btn-primary" id="guessbutton"
+  <a class="btn btn-success" id="guessbutton"
        style="position: absolute; top: 2px; left: 85%;"><i class="icon-check"></i></a>
   </div>
 
@@ -36,7 +37,7 @@ initJSON = {{.ActInitJSON}};
 <div style="position: absolute; top: 0px; left: 0px; z-index: -1; width: 100%;">
   <div style="height: 38px; width: 100%;">&nbsp;</div>
 <center style="width: 100%;">
-<table><tr><td style="background-color: white;">
+<table><tr><td style="background-color: white; padding: 1em;">
   {{.Guts}}
 </table>
 
@@ -51,7 +52,7 @@ initJSON = {{.ActInitJSON}};
 <div id="gossipbox" class="modal hide fade">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h2>Gossip</h2>
+    <h2>Who's Playing?</h2>
   </div>
   <ul id=gossiplist></ul> 
   <div class="modal-footer">

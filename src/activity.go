@@ -314,7 +314,7 @@ func guess(w http.ResponseWriter, r *http.Request) {
 func handleCorrectGuess(w http.ResponseWriter, r *http.Request, tid string, context appengine.Context, actID string, act ActivityRecord, guess string) {
 	nextacts := ""
 	for _, nextact := range actgetnext(context, actID) {
-		nextacts += " <a href=\"/a/" + nextact + "/\">" + nextact + "</a>,"
+		nextacts += " <a class=\"onward\" href=\"/a/" + nextact + "/\">" + nextact + "</a>,"
 	}
 	if nextacts != "" {
 		nextacts = ". Unlocked: " + nextacts[:len(nextacts)-1]
