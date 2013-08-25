@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
+	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -402,6 +403,8 @@ func teamprofile(w http.ResponseWriter, r *http.Request) {
 	context := appengine.NewContext(r)
 	// TODO "Stud + Stones" shows up as "Stud+++Stones", and we're not
 	// sure which are spaces and which are plusses.
+	log.Printf("TEAM URL PATH %s", r.URL.Path)
+	log.Printf("TEAM REQUESTURI %s", r.RequestURI)
 	otherTeamID, err := url.QueryUnescape(r.URL.Path[len("/team/"):])
 	logoutPrompt := ""
 	context.Infof("TID         %s x", tid)
@@ -477,6 +480,12 @@ func normalizeNewTeamName(in string) (out string) {
 		out = strings.TrimSpace(out[4:])
 	}
 	out = strings.TrimSpace(out)
+	if strings.HasPrefix(out, "/") {
+		out = strings.Replace(out, "/", "-", 1)
+	}
+	if strings.HasPrefix(out, ".") {
+		out = strings.Replace(out, ".", "-", 1)
+	}
 	return
 }
 

@@ -34,7 +34,7 @@ type ActivityRecord struct {
 	Partials  []string `datastore:",noindex"`
 	Hints     []string `datastore:",noindex"`
 	Tags      []string `datastore:",noindex"`
-	IVars     []string `datastore:",noindex"` // INTERA vars
+	IVars     []string `datastore:",noindex"` // INTERA vars // unused?
 }
 
 type ICache struct {
@@ -92,6 +92,7 @@ func arcmaps(context appengine.Context, tid string, arcs []string) map[string]On
 func arcjson(w http.ResponseWriter, r *http.Request) {
 	_, tid := GetAndOrUpdateSession(w, r)
 	context := appengine.NewContext(r)
+	w.Header().Set("Content-Type", "text/javascript")
 	arclist := strings.Split(r.FormValue("arcs"), ",")
 	js := map[string](interface{}){"arcs": arcmaps(context, tid, arclist)}
 	spewjsonp(w, r, js)
