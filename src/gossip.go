@@ -119,7 +119,7 @@ func gossip(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	spewjsonp(w, r, map[string](interface{}){"gossip": l})
+	spewjsonp(w, r, MapSI{"gossip": l})
 }
 
 // Get gossip for one team. Handy for displaying on their profile page.

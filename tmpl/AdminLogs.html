@@ -4,13 +4,13 @@
 <script src="/s/bootstrap.min.js"></script>
 #HEAD#
 #BODY#
-<h1><a href="/">#</a> <a href="/admin/">Admin</a> / Logs</h1>
+<h1><a href="/">#</a> <a href="/admin/">Admin</a> / WTF</h1>
 
 {{if .Filters}}
 <p>Filters:
 <ul>
 {{range .Filters}}
-  <li>{{. | html}}
+<li>{{.}}
 {{end}}
 </ul>
 {{end}}
@@ -18,9 +18,10 @@
 <table>
 {{.TableHeader}}
 {{range .Rows}}
-  {{.}}
+{{.}}
 {{end}}
 </table>
+
 
 <script>
 $('span.date').replaceWith(function() {
@@ -33,4 +34,5 @@ $('span.date').replaceWith(function() {
           hours + ":" + minutes)
 });
 </script>
+
 #BODY#

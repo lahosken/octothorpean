@@ -170,6 +170,10 @@ These excellent teams completed the hunt<br>
 		`You earn this badge by solving puzzles that use numbers.
 		 Letters are for chumps!`,
 	},
+	"nyc": {
+		"New York",
+		`You earn this badge by solving puzzles set in New York City.`,
+	},
 	/* Never heard back from him
 		"panda": {
 			"P&A",
@@ -281,6 +285,7 @@ func newBadges(actTags []string, points map[string]int, already map[string]int) 
 		//		"puzzazz": 2, // they don't wanna badge
 		"ravenchase": 1,
 		"lax":        2,
+		"nyc":        2,
 		"rdu":        2,
 		"sfo":        2,
 	}

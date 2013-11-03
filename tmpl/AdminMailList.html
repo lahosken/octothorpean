@@ -1,0 +1,25 @@
+#wrap:ADMIN.html#
+#HEAD#
+<script src="/s/jquery-1.9.0.min.js"></script>
+<script src="/s/bootstrap.min.js"></script>
+#HEAD#
+#BODY#
+<h1><a href="/">OWL</a> <a href="/admin/">Admin</a> / Generate Mailing List</h1>
+
+<form>
+<label for="act" style="font-weight: bold;">Act:</label>
+<input name="act" id="act" type="text" value="{{.Act}}">
+<input name="submit" id="submit" type="submit">
+</form>
+
+<p><b>Teams:</b>
+{{range .Teams}}
+  {{.}},
+{{end}}
+
+<p><b>EMails:</b>
+{{range .Addresses}}
+  {{.}},
+{{end}}
+
+#BODY#

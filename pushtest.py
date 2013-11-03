@@ -17,6 +17,7 @@ src/badge.go
 src/gossip.go
 src/octo.go
 src/session.go
+src/spewmail.go
 src/teamui.go
 src/teamstore.go
 src/templates.go

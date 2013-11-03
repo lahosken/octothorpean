@@ -19,7 +19,7 @@ import (
 	"net/url"
 	"path"
 	"strings"
-	"text/template"
+	"html/template"
 	"time"
 )
 
@@ -50,10 +50,11 @@ func adminmenu(w http.ResponseWriter, r *http.Request) {
                         </form>`)
 	} else {
 		fmt.Fprintf(w, `Hello, %s!<ul>
-          <li><a href="/admin/gossip">Gossip/Dashboard</a> / <a href="/admin/logs">Logs</a>
-          <li><a href="/admin/teamspreadsheet.tsv?arc=demo">&quot;Spreadsheet&quot; view</a>
+          <li><a href="/admin/gossip">Gossip/Dashboard</a> / <a href="/admin/logs">Logs</a> / <a href="/admin/wtf">WTF Logs</a>
+          <li><a href="/admin/teamspreadsheetv?arc=demo">&quot;Spreadsheet&quot; view</a>
           <li><a href="/admin/uploadprompt">Upload Activity or Arc</a>
           <li><a href="/admin/editadmin">Create/Edit Admin Accounts</a>
+          <li><a href="/admin/maillist">List Emails of Folks w/Puzzle Open</a> in case of problem w/that puzzle
           </ul>`, html.EscapeString(aid))
 	}
 
@@ -548,6 +549,7 @@ func checkAdminLogin(w http.ResponseWriter, r *http.Request) (adminLogin string)
 		fmt.Fprintf(w, `Password "%s" did not match<br>
                         <a href="/admin/login">Log in</a> or something?<br>`,
 			html.EscapeString(loginAndPasswd[1]))
+		return
 	}
 	return loginAndPasswd[0]
 }
@@ -595,7 +597,7 @@ func adminlogs(w http.ResponseWriter, r *http.Request) {
 		filters = append(filters, "verb = "+verb)
 	}
 	tableheader = tableheader + "<th>Guess <th>#/Notes <th>Created"
-	rows := []string{}
+	rows := []template.HTML{}
 	q := datastore.NewQuery("TLog").Order("-Created").Limit(500)
 	// filter on team or verb, but not both. (why not both? I'm too miserly
 	// to create another index for such rarely-used queries)
@@ -640,12 +642,12 @@ func adminlogs(w http.ResponseWriter, r *http.Request) {
 		}
 		row = row + fmt.Sprintf("<td>%s <td>%s <td><span class=\"date\">%s</span>",
 			tlr.Guess, note, tlr.Created)
-		rows = append(rows, row)
+		rows = append(rows, template.HTML(row))
 	}
 	template.Must(template.New("").Parse(tAdminLogs)).Execute(w, MapSI{
 		"PageTitle":   "Admin / Logs",
 		"Filters":     filters,
-		"TableHeader": tableheader,
+		"TableHeader": template.HTML(tableheader),
 		"Rows":        rows,
 	})
 }
@@ -682,5 +684,82 @@ func admingossipjson(w http.ResponseWriter, r *http.Request) {
 			M: fmt.Sprintf(`%s %s %s %s %s`, t, v, a, g, n),
 		})
 	}
-	spewjsonp(w, r, map[string](interface{}){"gossip": l})
+	spewjsonp(w, r, MapSI{"gossip": l})
+}
+
+func adminwtflogs(w http.ResponseWriter, r *http.Request) {
+	var count = map[string]int{}
+	context := appengine.NewContext(r)
+	q := datastore.NewQuery("TLog").Order("-Created").Filter("Verb=", "wtfguess")
+	for iter := q.Run(context); ; {
+		var tlr TLogRecord
+		_, err := iter.Next(&tlr)
+		if err == datastore.Done {
+			break
+		}
+		if err != nil {
+			context.Warningf("TeamGossip iter ERR %s", err.Error())
+			break
+		}
+		mapkey := tlr.ActID + ":" + tlr.Guess
+		count[mapkey] = count[mapkey] + 1
+		if len(count) >= 200 { break }
+	}
+	outs := []string{}
+	for i := 200; i > 1; i-- {
+		for key, value := range count {
+			if value != i { continue }
+			outs = append(outs, fmt.Sprintf("%s %d", key, value))
+		}
+	}
+    template.Must(template.New("").Parse(tAdminWTFLogs)).Execute(w, MapSI{
+		"PageTitle": "WTF",
+		"Counts": outs,
+	})
+}
+
+func adminmaillist(w http.ResponseWriter, r *http.Request) {
+    aid := checkAdminLogin(w, r)
+    if aid == "" {
+        fmt.Fprintf(w, `alert("Not logged in!");`)
+        return
+    }
+	actID := r.FormValue("act")
+	if actID == "" { actID = "ui" }
+
+    context := appengine.NewContext(r)
+
+    q := datastore.NewQuery("TAState").Filter("ActID=", actID)
+
+    teamIDs := []string{}
+    addresses := []string{ }
+	var teamKeys []*datastore.Key
+
+    for iter := q.Run(context); ; {
+        var tas TAStateRecord
+        _, err := iter.Next(&tas)
+        if err != nil {
+            break
+        }
+        if tas.SolvedP { continue }
+        teamIDs = append(teamIDs, tas.TeamID)
+		teamKeys = append(teamKeys,  datastore.NewKey(context, "Team", tas.TeamID, 0, nil))
+    }
+
+    teams := make([]TeamRecord, len(teamKeys))
+
+    datastore.GetMulti(context, teamKeys, teams)
+
+    for _, team := range teams {
+        for _, a := range team.EmailList {
+            addresses = append(addresses, a)
+        }
+    }
+
+    template.Must(template.New("").Parse(tAdminMailList)).Execute(w, MapSI{
+        "PageTitle": "MailList",
+		"Act": actID,
+        "Teams": teamIDs,
+        "Addresses": addresses,
+    })
 }

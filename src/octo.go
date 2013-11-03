@@ -43,6 +43,7 @@ func init() {
 	http.HandleFunc("/admin/gossip", admingossip)
 	http.HandleFunc("/admin/gossip.json", admingossipjson)
 	http.HandleFunc("/admin/logs", adminlogs)
+	http.HandleFunc("/admin/wtf", adminwtflogs)
 	http.HandleFunc("/admin/login", adminlogin)
 	http.HandleFunc("/admin/upload", adminupload)
 	http.HandleFunc("/admin/digestupload", digestupload)
@@ -51,6 +52,8 @@ func init() {
 	http.HandleFunc("/admin/editadmin", admineditadmin)
 	http.HandleFunc("/admin/editactivity", admineditactivity)
 	http.HandleFunc("/admin/teamspreadsheet", adminteamspreadsheet)
+	http.HandleFunc("/admin/spewmail", adminspewmail)
+	http.HandleFunc("/admin/maillist", adminmaillist)
 	// social
 	http.HandleFunc("/gossip", gossip)
 	// morlocks
