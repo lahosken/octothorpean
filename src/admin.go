@@ -129,6 +129,10 @@ func admineditadmin(w http.ResponseWriter, r *http.Request) {
 func adminuploadprompt(w http.ResponseWriter, r *http.Request) {
 	context := appengine.NewContext(r)
 	aid := checkAdminLogin(w, r)
+	if aid == "" {
+		io.WriteString(w, "<p>You really need to log in. Sorry about that.")
+		return
+	}
 	uploadURL, err := blobstore.UploadURL(context, "/admin/upload", nil)
 	if err != nil {
 		return
@@ -580,6 +584,7 @@ func adminlogs(w http.ResponseWriter, r *http.Request) {
 	act := r.FormValue("act")
 	verb := r.FormValue("verb")
 	filters := []string{}
+	limit := 500
 	tableheader := "<tr>"
 	if team == "" {
 		tableheader = tableheader + "<th>Team"
@@ -590,6 +595,7 @@ func adminlogs(w http.ResponseWriter, r *http.Request) {
 		tableheader = tableheader + "<th>Act"
 	} else {
 		filters = append(filters, "act = "+act)
+		limit = limit * 10
 	}
 	if verb == "" {
 		tableheader = tableheader + "<th>Verb"
@@ -598,7 +604,7 @@ func adminlogs(w http.ResponseWriter, r *http.Request) {
 	}
 	tableheader = tableheader + "<th>Guess <th>#/Notes <th>Created"
 	rows := []template.HTML{}
-	q := datastore.NewQuery("TLog").Order("-Created").Limit(500)
+	q := datastore.NewQuery("TLog").Order("-Created").Limit(limit)
 	// filter on team or verb, but not both. (why not both? I'm too miserly
 	// to create another index for such rarely-used queries)
 	if team != "" {
@@ -688,6 +694,8 @@ func admingossipjson(w http.ResponseWriter, r *http.Request) {
 }
 
 func adminwtflogs(w http.ResponseWriter, r *http.Request) {
+    DEPTH := 50 // if one item has this many hits, we're done
+	BREADTH := 200 // if we've seen this many items, we're done
 	var count = map[string]int{}
 	context := appengine.NewContext(r)
 	q := datastore.NewQuery("TLog").Order("-Created").Filter("Verb=", "wtfguess")
@@ -703,10 +711,11 @@ func adminwtflogs(w http.ResponseWriter, r *http.Request) {
 		}
 		mapkey := tlr.ActID + ":" + tlr.Guess
 		count[mapkey] = count[mapkey] + 1
-		if len(count) >= 200 { break }
+		if count[mapkey] >= DEPTH { break }
+		if len(count) >= BREADTH { break }
 	}
 	outs := []string{}
-	for i := 200; i > 1; i-- {
+	for i := DEPTH; i > 1; i-- { // if we were prostyle, we'd sort. 
 		for key, value := range count {
 			if value != i { continue }
 			outs = append(outs, fmt.Sprintf("%s %d", key, value))
@@ -762,4 +771,31 @@ func adminmaillist(w http.ResponseWriter, r *http.Request) {
         "Teams": teamIDs,
         "Addresses": addresses,
     })
+}
+
+// yipe team RedNation hit a highly-visible double-counting bug:
+// their conspiracy badge got to level 2
+func admincleanteam(w http.ResponseWriter, r *http.Request) {
+	aid := checkAdminLogin(w, r)
+	if aid == "" {
+		io.WriteString(w, "<p>You really need to log in. Sorry about that.")
+		return
+	}
+	context := appengine.NewContext(r)
+	teamID := "RedNation"
+	key := datastore.NewKey(context, "Team", teamID, 0, nil)
+	tr := TeamRecord{}
+	datastore.Get(context, key, &tr)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprintf(w, `Before:<br>`)
+	fmt.Fprintf(w, ` Badges:%s<br>`, tr.Badges)
+	fmt.Fprintf(w, ` Tags:%s<br>`, tr.Tags)
+	replfrom := `"conspiracy":2`
+	replto := `"conspiracy":1`
+	tr.Badges = strings.Replace(tr.Badges, replfrom, replto,1 )
+	tr.Tags = strings.Replace(tr.Tags, replfrom, replto,1)
+	fmt.Fprintf(w, `After:<br>`)
+	fmt.Fprintf(w, ` Badges:%s<br>`, tr.Badges)
+	fmt.Fprintf(w, ` Tags:%s<br>`, tr.Tags)
+	datastore.Put(context, key, &tr)
 }

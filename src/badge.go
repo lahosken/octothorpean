@@ -372,7 +372,7 @@ func newBadges(actTags []string, points map[string]int, already map[string]int) 
 // Get gossip for one badge. Handy for displaying on its profile page.
 func getBadgeGossip(context appengine.Context, bid string) (out []tidbit) {
 	alreadySet := make(map[string]bool) // say something once, why say it again?
-	q := datastore.NewQuery("TLog").Order("-Created").Filter("Verb=", "badge").Limit(500)
+	q := datastore.NewQuery("TLog").Order("-Created").Filter("Verb=", "badge").Limit(1000)
 	for iter := q.Run(context); ; { // TODO GetAll didn't work in r58
 		var tlr TLogRecord
 		_, err := iter.Next(&tlr)

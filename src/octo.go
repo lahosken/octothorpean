@@ -54,6 +54,7 @@ func init() {
 	http.HandleFunc("/admin/teamspreadsheet", adminteamspreadsheet)
 	http.HandleFunc("/admin/spewmail", adminspewmail)
 	http.HandleFunc("/admin/maillist", adminmaillist)
+	http.HandleFunc("/admin/cleanteam", admincleanteam)
 	// social
 	http.HandleFunc("/gossip", gossip)
 	// morlocks
