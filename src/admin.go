@@ -12,6 +12,7 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"encoding/csv"
 	"fmt"
 	"html"
 	"io"
@@ -73,7 +74,6 @@ func adminlogin(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &c)
 	fmt.Fprintf(w, `It is done. <a href="/admin/">OK</a>`)
 	if appengine.IsDevAppServer() {
-		context.Infof("HEJ")
 		aa := AdminAccountRecord{
 			ID:       admin,
 			Password: passwd,
@@ -773,6 +773,61 @@ func adminmaillist(w http.ResponseWriter, r *http.Request) {
     })
 }
 
+// Dump tab-separated-values 
+func admindumpteamlogs(w http.ResponseWriter, r *http.Request) {
+	aid := checkAdminLogin(w, r)
+	if aid == "" {
+		io.WriteString(w, "<p>You really need to log in. Sorry about that.")
+		return
+	}
+	context := appengine.NewContext(r)
+	
+	// Grabbing the million most recent logs isn't so useful; for our
+	// measuring, we want to know how _teams_ make their way. So grab logs
+	// from recent _teams_. (If an old team has been active recently, that's
+    // interesting for some analyses... but not for what we're doing _here_.)
+	recentTeamIDs := []string{}
+	q:= datastore.NewQuery("Team").Order("-Created").Limit(100)
+	for iter := q.Run(context); ; {
+		var tr TeamRecord
+		_, err := iter.Next(&tr)
+		if err != nil {
+			break
+		}
+		recentTeamIDs = append(recentTeamIDs, tr.ID)
+	}
+
+	records := [][]string{}
+
+	for _, recentTeamID := range recentTeamIDs {
+		q = datastore.NewQuery("TLog").Filter("TeamID=", recentTeamID)
+		for iter := q.Run(context); ; {
+		var tlr TLogRecord
+		_, err := iter.Next(&tlr)
+		if err != nil {
+			break
+		}
+			asStringArray := []string{
+				fmt.Sprintf("%d", tlr.Created.Unix()),
+				tlr.TeamID,
+				tlr.ActID,
+				tlr.Verb,
+				tlr.Guess,
+				fmt.Sprintf("%d", tlr.Hint),
+				tlr.Notes,
+			}
+			records = append(records, asStringArray)
+		}
+	}
+
+	
+
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	tsvWriter := csv.NewWriter(w)
+	tsvWriter.Comma = '\t'
+	tsvWriter.WriteAll(records)
+}
+
 // yipe team RedNation hit a highly-visible double-counting bug:
 // their conspiracy badge got to level 2
 func admincleanteam(w http.ResponseWriter, r *http.Request) {
@@ -799,3 +854,4 @@ func admincleanteam(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, ` Tags:%s<br>`, tr.Tags)
 	datastore.Put(context, key, &tr)
 }
+
