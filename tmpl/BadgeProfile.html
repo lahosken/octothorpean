@@ -23,7 +23,7 @@ img.icon {
 <table><tr><td>
 <ul>
 {{range .Gossip}}
-<li><small><script>document.write(new Date({{.T}}).toDateString());</script></small> <a href="/team/{{.M}}">{{.M}}</a> earned this badge.
+<li><small><script>document.write(new Date({{.T}}).toDateString());</script></small> <a href="/team/{{.M | urlquery }}">{{.M}}</a> earned this badge.
 {{end}}
 </ul>
 </table>

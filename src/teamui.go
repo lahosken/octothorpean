@@ -203,7 +203,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 		UnlockAct(context, tid, nextact)
 	}
 	memcache.Delete(context, "Teams/IDList")
-	msg := &mail.Message{ // TODO this will change a lot
+	msg := &mail.Message{
 		Sender:  "octothorpean@gmail.com",
 		To:      emailList,
 		Subject: "Confirm your registration",
@@ -215,7 +215,10 @@ Your password is: %s
 
 Login at http://octothorpean.org/loginprompt?team=%s    
 
-    Have fun!
+# # # Have fun! # # #
+
+(You can send comments, typo reports, etc.
+to this octothorpean@gmail.com address.)
     `, newTeamRecord.ID, newTeamRecord.Password, url.QueryEscape(newTeamRecord.ID))}
 	if err := mail.Send(context, msg); err != nil {
 		context.Errorf("Accont create couldn't send mail TID=%s E0=%s ERR=%s", tid, emailList[0], err.Error())
@@ -310,7 +313,7 @@ func resetpassword(w http.ResponseWriter, r *http.Request) {
 func editteamprompt(w http.ResponseWriter, r *http.Request) {
 	session, tid := GetAndOrUpdateSession(w, r)
 	if tid == "" {
-		showMessage(w, "Error: not logged in", "You are not logged in", "", "")
+		showMessage(w, "Error: not logged in", "You are not logged in", "", "/loginprompt")
 		return
 	}
 	context := appengine.NewContext(r)
@@ -409,10 +412,10 @@ func teamprofile(w http.ResponseWriter, r *http.Request) {
 	logoutPrompt := ""
 	context.Infof("TID         %s x", tid)
 	context.Infof("OTHERTEAMID %s x", otherTeamID)
-    if otherTeamID == tid {
+	if otherTeamID == tid {
 		logoutPrompt = `<a href="/logout" class="btn">Logout</a>`
 	}
-    context.Infof("logoutPrompt %s", logoutPrompt)
+	context.Infof("logoutPrompt %s", logoutPrompt)
 	if otherTeamID == "" {
 		w.WriteHeader(http.StatusNotFound)
 		showMessage(w, "No such team",
@@ -453,12 +456,12 @@ func teamprofile(w http.ResponseWriter, r *http.Request) {
 	}
 	g := getTeamGossip(context, otherTeamID)
 	template.Must(template.New("").Parse(tTeamProfile)).Execute(w, MapSI{
-		"PageTitle":   "Team Profile",
-		"TID":         tid,
-		"TeamID":      otherTeamID,
-		"Description": t.Description,
-		"Gossip":      g,
-		"Badges":      badgeDisplayInfo,
+		"PageTitle":    "Team Profile",
+		"TID":          tid,
+		"TeamID":       otherTeamID,
+		"Description":  t.Description,
+		"Gossip":       g,
+		"Badges":       badgeDisplayInfo,
 		"LogoutPrompt": logoutPrompt,
 	})
 }

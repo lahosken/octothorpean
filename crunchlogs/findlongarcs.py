@@ -17,7 +17,7 @@ class TLog():
     self.note = note
 
 def ReadLogs():
-  f = open("../../octodata/dumpteamlogs_20131130.tsv")
+  f = open("../../octodata/dumpteamlogs_20140120.tsv")
   csvr = csv.reader(f, delimiter="\t", lineterminator="\n")
   retval = []
   for tuple in csvr:
@@ -36,7 +36,7 @@ def IndexLogs(l):
   return retval
     
 def GetArcs():
-  f = open("../../octodata/INTERA_20131130.txt")
+  f = open("../../octodata/INTERA_20140120.txt")
   retval = {}
   curnick = ""
   curstruct = {}

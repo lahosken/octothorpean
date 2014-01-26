@@ -15,12 +15,12 @@ import (
 	"encoding/csv"
 	"fmt"
 	"html"
+	"html/template"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
 	"strings"
-	"html/template"
 	"time"
 )
 
@@ -694,7 +694,7 @@ func admingossipjson(w http.ResponseWriter, r *http.Request) {
 }
 
 func adminwtflogs(w http.ResponseWriter, r *http.Request) {
-    DEPTH := 50 // if one item has this many hits, we're done
+	DEPTH := 50    // if one item has this many hits, we're done
 	BREADTH := 200 // if we've seen this many items, we're done
 	var count = map[string]int{}
 	context := appengine.NewContext(r)
@@ -711,66 +711,76 @@ func adminwtflogs(w http.ResponseWriter, r *http.Request) {
 		}
 		mapkey := tlr.ActID + ":" + tlr.Guess
 		count[mapkey] = count[mapkey] + 1
-		if count[mapkey] >= DEPTH { break }
-		if len(count) >= BREADTH { break }
+		if count[mapkey] >= DEPTH {
+			break
+		}
+		if len(count) >= BREADTH {
+			break
+		}
 	}
 	outs := []string{}
 	for i := DEPTH; i > 1; i-- { // if we were prostyle, we'd sort. 
 		for key, value := range count {
-			if value != i { continue }
+			if value != i {
+				continue
+			}
 			outs = append(outs, fmt.Sprintf("%s %d", key, value))
 		}
 	}
-    template.Must(template.New("").Parse(tAdminWTFLogs)).Execute(w, MapSI{
+	template.Must(template.New("").Parse(tAdminWTFLogs)).Execute(w, MapSI{
 		"PageTitle": "WTF",
-		"Counts": outs,
+		"Counts":    outs,
 	})
 }
 
 func adminmaillist(w http.ResponseWriter, r *http.Request) {
-    aid := checkAdminLogin(w, r)
-    if aid == "" {
-        fmt.Fprintf(w, `alert("Not logged in!");`)
-        return
-    }
+	aid := checkAdminLogin(w, r)
+	if aid == "" {
+		fmt.Fprintf(w, `alert("Not logged in!");`)
+		return
+	}
 	actID := r.FormValue("act")
-	if actID == "" { actID = "ui" }
+	if actID == "" {
+		actID = "ui"
+	}
 
-    context := appengine.NewContext(r)
+	context := appengine.NewContext(r)
 
-    q := datastore.NewQuery("TAState").Filter("ActID=", actID)
+	q := datastore.NewQuery("TAState").Filter("ActID=", actID)
 
-    teamIDs := []string{}
-    addresses := []string{ }
+	teamIDs := []string{}
+	addresses := []string{}
 	var teamKeys []*datastore.Key
 
-    for iter := q.Run(context); ; {
-        var tas TAStateRecord
-        _, err := iter.Next(&tas)
-        if err != nil {
-            break
-        }
-        if tas.SolvedP { continue }
-        teamIDs = append(teamIDs, tas.TeamID)
-		teamKeys = append(teamKeys,  datastore.NewKey(context, "Team", tas.TeamID, 0, nil))
-    }
+	for iter := q.Run(context); ; {
+		var tas TAStateRecord
+		_, err := iter.Next(&tas)
+		if err != nil {
+			break
+		}
+		if tas.SolvedP {
+			continue
+		}
+		teamIDs = append(teamIDs, tas.TeamID)
+		teamKeys = append(teamKeys, datastore.NewKey(context, "Team", tas.TeamID, 0, nil))
+	}
 
-    teams := make([]TeamRecord, len(teamKeys))
+	teams := make([]TeamRecord, len(teamKeys))
 
-    datastore.GetMulti(context, teamKeys, teams)
+	datastore.GetMulti(context, teamKeys, teams)
 
-    for _, team := range teams {
-        for _, a := range team.EmailList {
-            addresses = append(addresses, a)
-        }
-    }
+	for _, team := range teams {
+		for _, a := range team.EmailList {
+			addresses = append(addresses, a)
+		}
+	}
 
-    template.Must(template.New("").Parse(tAdminMailList)).Execute(w, MapSI{
-        "PageTitle": "MailList",
-		"Act": actID,
-        "Teams": teamIDs,
-        "Addresses": addresses,
-    })
+	template.Must(template.New("").Parse(tAdminMailList)).Execute(w, MapSI{
+		"PageTitle": "MailList",
+		"Act":       actID,
+		"Teams":     teamIDs,
+		"Addresses": addresses,
+	})
 }
 
 // Dump tab-separated-values 
@@ -781,13 +791,13 @@ func admindumpteamlogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	context := appengine.NewContext(r)
-	
+
 	// Grabbing the million most recent logs isn't so useful; for our
 	// measuring, we want to know how _teams_ make their way. So grab logs
 	// from recent _teams_. (If an old team has been active recently, that's
-    // interesting for some analyses... but not for what we're doing _here_.)
+	// interesting for some analyses... but not for what we're doing _here_.)
 	recentTeamIDs := []string{}
-	q:= datastore.NewQuery("Team").Order("-Created").Limit(100)
+	q := datastore.NewQuery("Team").Order("-Created").Limit(100)
 	for iter := q.Run(context); ; {
 		var tr TeamRecord
 		_, err := iter.Next(&tr)
@@ -802,11 +812,11 @@ func admindumpteamlogs(w http.ResponseWriter, r *http.Request) {
 	for _, recentTeamID := range recentTeamIDs {
 		q = datastore.NewQuery("TLog").Filter("TeamID=", recentTeamID)
 		for iter := q.Run(context); ; {
-		var tlr TLogRecord
-		_, err := iter.Next(&tlr)
-		if err != nil {
-			break
-		}
+			var tlr TLogRecord
+			_, err := iter.Next(&tlr)
+			if err != nil {
+				break
+			}
 			asStringArray := []string{
 				fmt.Sprintf("%d", tlr.Created.Unix()),
 				tlr.TeamID,
@@ -819,8 +829,6 @@ func admindumpteamlogs(w http.ResponseWriter, r *http.Request) {
 			records = append(records, asStringArray)
 		}
 	}
-
-	
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	tsvWriter := csv.NewWriter(w)
@@ -847,11 +855,10 @@ func admincleanteam(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, ` Tags:%s<br>`, tr.Tags)
 	replfrom := `"conspiracy":2`
 	replto := `"conspiracy":1`
-	tr.Badges = strings.Replace(tr.Badges, replfrom, replto,1 )
-	tr.Tags = strings.Replace(tr.Tags, replfrom, replto,1)
+	tr.Badges = strings.Replace(tr.Badges, replfrom, replto, 1)
+	tr.Tags = strings.Replace(tr.Tags, replfrom, replto, 1)
 	fmt.Fprintf(w, `After:<br>`)
 	fmt.Fprintf(w, ` Badges:%s<br>`, tr.Badges)
 	fmt.Fprintf(w, ` Tags:%s<br>`, tr.Tags)
 	datastore.Put(context, key, &tr)
 }
-
