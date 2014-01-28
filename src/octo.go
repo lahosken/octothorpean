@@ -2,6 +2,7 @@ package octo
 
 import (
 	"appengine"
+	"appengine/datastore"
 	"encoding/json"
 	"fmt"
 	//  "log"
@@ -55,6 +56,7 @@ func init() {
 	http.HandleFunc("/admin/spewmail", adminspewmail)
 	http.HandleFunc("/admin/maillist", adminmaillist)
 	http.HandleFunc("/admin/dumpteamlogs.tsv", admindumpteamlogs)
+	http.HandleFunc("/admin/editteam", admineditteam)
 	http.HandleFunc("/admin/cleanteam", admincleanteam)
 	// social
 	http.HandleFunc("/gossip", gossip)
@@ -70,15 +72,36 @@ func topscreen(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, tid := GetAndOrUpdateSession(w, r)
-
-	t := template.Must(template.New("").Parse(tTop))
-	type Madlib struct {
-		PageTitle string
-		TID       string
+	links := []string{}
+	if tid != "" {
+		context := appengine.NewContext(r)
+		q := datastore.NewQuery("TLog").Filter("TeamID=", tid).Order("-Created")
+		for iter := q.Run(context); ; {
+			var tlr TLogRecord
+			_, err := iter.Next(&tlr)
+			if err == datastore.Done {
+				break
+			}
+			if err != nil {
+				continue
+			}
+			if tlr.Verb != "solve" {
+				continue
+			}
+			followers := actgetnext(context, tlr.ActID)
+			if len(followers) < 3 {
+				continue
+			}
+			links = append(links, tlr.ActID)
+			if len(links) > 3 { 
+				break
+            }
+		}
 	}
-	t.Execute(w, Madlib{
-		"Octothorpean Order",
-		tid,
+	template.Must(template.New("").Parse(tTop)).Execute(w, MapSI{
+		"PageTitle": "Octothorpean Order",
+		"TID": tid,
+		"Links": links,
 	})
 }
 

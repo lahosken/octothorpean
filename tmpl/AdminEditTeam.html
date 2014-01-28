@@ -1,0 +1,46 @@
+#wrap:ADMIN.html#
+#BODY#
+<h1><a href="/">#</a> Editing Team {{.Team|html}}</h1>
+    <form action="/admin/editteam" method="POST">
+     <table>
+     <tr>
+     <td><label for="enteredteam">Entered Team Name:</label>
+     <td><input type="text" name="enteredteam" id="enteredteam" size=40 
+                value="{{.EnteredTeam|html}}">
+     <tr>
+     <td>Error?
+     <td>{{.Error}}
+     <tr>
+     <td>Found Team Name:
+     <td>{{.Team|html}}
+{{range .EmailList}}
+     <tr>
+     <td>Player's Email:
+     <td><input type="text" name="m" size=40 
+                value="{{.|html}}">
+{{end}}
+     <tr>
+     <td><label for="announceOK">Announcements?</label>
+     <td><input type="checkbox" name="announceok" 
+                {{if .AnnounceOK}}
+                checked=checked
+                {{end}}>
+         OK to mail new puzzles, etc.?
+	 <tr>
+     <td><label for="tags">Tags JSON</label>
+     <td><textarea name="tags" id="tags" cols=40 rows=4>{{.Tags}}</textarea>
+	 <tr>
+     <td><label for="badges">Badges JSON</label>
+     <td><textarea name="badges" id="badges" cols=40 rows=4>{{.Badges}}</textarea>
+	 <tr>
+     <td><label for="yarly">O RLY?</label>
+     <td><input type="checkbox" name="yarly"> YA RLY
+	 <tr>
+     <td><label for="logpcard">Log PCard?</label>
+     <td><input type="checkbox" name="logpcard"> DO EET
+     <tr>
+     <td colspan=2><input type="submit" value="Update">
+                   <a href="/">Cancel</a>
+     </table>
+    </form>
+#BODY#

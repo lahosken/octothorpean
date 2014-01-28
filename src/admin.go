@@ -862,3 +862,50 @@ func admincleanteam(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, ` Tags:%s<br>`, tr.Tags)
 	datastore.Put(context, key, &tr)
 }
+
+// yipe team RedNation hit a highly-visible double-counting bug:
+// their conspiracy badge got to level 2
+func admineditteam(w http.ResponseWriter, r *http.Request) {
+	aid := checkAdminLogin(w, r)
+	if aid == "" {
+		io.WriteString(w, "<p>You really need to log in. Sorry about that.")
+		return
+	}
+	context := appengine.NewContext(r)
+	enteredTeam := r.FormValue("enteredteam") 
+	tr := TeamRecord{}
+    var err error
+	if enteredTeam != "" {
+		key := datastore.NewKey(context, "Team", enteredTeam, 0, nil)
+		err = datastore.Get(context, key, &tr)
+		if err != nil {
+			context.Warningf("editteamprompt no read TID=%s ERR=%s", enteredTeam, err.Error())
+		}
+	}
+	if (r.FormValue("yarly") == "on") && (tr.ID != "") {
+		key := datastore.NewKey(context, "Team", tr.ID, 0, nil)
+		tr.EmailList = r.Form["m"]
+		tr.AnnounceOK = 0
+		if r.FormValue("announceok") == "on" {
+			tr.AnnounceOK = 1
+		}
+		tr.Tags = r.FormValue("tags")
+		tr.Badges = r.FormValue("badges")
+		ALog(context, aid, "editteam", tr.ID)
+		TLog(context, tr.ID, "", "adminedit", aid)
+		if r.FormValue("logpcard") == "on" {
+			TLog(context, tr.ID, "ui", "badge", "postcard")
+		}
+		_, err = datastore.Put(context, key, &tr)
+	}
+	template.Must(template.New("").Parse(tAdminEditTeam)).Execute(w, MapSI{
+		"PageTitle": "editing team",
+		"EnteredTeam": enteredTeam,
+		"Error": err,
+		"Team": tr.ID,
+		"EmailList": tr.EmailList,
+		"AnnounceOK": tr.AnnounceOK,
+		"Tags": tr.Tags,
+		"Badges": tr.Badges,
+	})
+}

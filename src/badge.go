@@ -207,6 +207,11 @@ These excellent teams completed the hunt<br>
 		`You earn this badge by solving puzzles involving popular culture.
 		At last, you've found a purpose for your movie trivia knowledge.`,
 	},
+	"postcard": {
+		"Postcard",
+		`You earn this badge by sending in photographs of yourself at
+         puzzle sites.`,
+	},
 	//	"puzzazz": {
 	//		"Puzzazz",
 	//	    `You earn this badge by solving puzzles in the style of
@@ -249,6 +254,11 @@ These excellent teams completed the hunt<br>
         coworkers can understand; they run trickier events for by and about
         puzzlehunters. They welcome puzzling beginners and experts.`,
 	},
+	"stl": {
+		"St Louis",
+		`You earn this badge by solving puzzles set in St Louis,
+         Missouri.`,
+	},
 	"word": {
 		"Word",
 		`You earn this badge by solving word puzzles.`,
@@ -288,6 +298,7 @@ func newBadges(actTags []string, points map[string]int, already map[string]int) 
 		"nyc":        2,
 		"rdu":        2,
 		"sfo":        2,
+		"stl":        2,
 	}
 	for badge, div := range orgRatios {
 		if actTagsSet[badge] && (points[badge]/div > already[badge]) {

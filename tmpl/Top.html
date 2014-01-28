@@ -16,6 +16,9 @@
 		    <ul>
 {{if .TID}}
 		    <li><a href="/a/ui/">Go go go</a>,
+{{range .Links}}
+		    <li><a href="/a/{{.}}/">{{.}}</a>,
+{{end}}
             <li><a href="/editteamprompt">Edit team info</a>, or
 {{else}}
             <li><a href="/loginprompt">Login</a>,
