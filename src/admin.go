@@ -872,9 +872,9 @@ func admineditteam(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	context := appengine.NewContext(r)
-	enteredTeam := r.FormValue("enteredteam") 
+	enteredTeam := r.FormValue("enteredteam")
 	tr := TeamRecord{}
-    var err error
+	var err error
 	if enteredTeam != "" {
 		key := datastore.NewKey(context, "Team", enteredTeam, 0, nil)
 		err = datastore.Get(context, key, &tr)
@@ -899,13 +899,13 @@ func admineditteam(w http.ResponseWriter, r *http.Request) {
 		_, err = datastore.Put(context, key, &tr)
 	}
 	template.Must(template.New("").Parse(tAdminEditTeam)).Execute(w, MapSI{
-		"PageTitle": "editing team",
+		"PageTitle":   "editing team",
 		"EnteredTeam": enteredTeam,
-		"Error": err,
-		"Team": tr.ID,
-		"EmailList": tr.EmailList,
-		"AnnounceOK": tr.AnnounceOK,
-		"Tags": tr.Tags,
-		"Badges": tr.Badges,
+		"Error":       err,
+		"Team":        tr.ID,
+		"EmailList":   tr.EmailList,
+		"AnnounceOK":  tr.AnnounceOK,
+		"Tags":        tr.Tags,
+		"Badges":      tr.Badges,
 	})
 }

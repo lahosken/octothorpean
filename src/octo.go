@@ -94,15 +94,15 @@ func topscreen(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			links = append(links, tlr.ActID)
-			if len(links) > 3 { 
+			if len(links) > 3 {
 				break
-            }
+			}
 		}
 	}
 	template.Must(template.New("").Parse(tTop)).Execute(w, MapSI{
 		"PageTitle": "Octothorpean Order",
-		"TID": tid,
-		"Links": links,
+		"TID":       tid,
+		"Links":     links,
 	})
 }
 

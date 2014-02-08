@@ -16,12 +16,12 @@ import (
 func getMailableTeams(context appengine.Context) (l []TeamRecord) {
 	q := datastore.NewQuery("Team")
 	for iter := q.Run(context); ; {
-	    var team TeamRecord
-	    _, err := iter.Next(&team)
-	    if err == datastore.Done {
+		var team TeamRecord
+		_, err := iter.Next(&team)
+		if err == datastore.Done {
 			break
 		}
-     	if len(team.EmailList) < 1  {
+		if len(team.EmailList) < 1 {
 			continue
 		}
 		if rand.Intn(10) > 0 {
@@ -38,19 +38,19 @@ func getMailableTeams(context appengine.Context) (l []TeamRecord) {
 	return
 }
 
-func mailedTeamRecentlyP(context appengine.Context, team TeamRecord) (bool) {
+func mailedTeamRecentlyP(context appengine.Context, team TeamRecord) bool {
 	monthAgo := time.Now().AddDate(0, -1, -1)
 	q := datastore.NewQuery("TLog").Filter("TeamID=", team.ID).Order("-Created")
 	for iter := q.Run(context); ; {
 		var tlr TLogRecord
-        _, err := iter.Next(&tlr)
+		_, err := iter.Next(&tlr)
 		if err == datastore.Done {
-            return false
-        }
+			return false
+		}
 		if err != nil {
 			// we got a weird error. play it safe; don't send mail
-            return true
-        }
+			return true
+		}
 		if tlr.Created.Before(monthAgo) {
 			return false
 		}
@@ -61,7 +61,7 @@ func mailedTeamRecentlyP(context appengine.Context, team TeamRecord) (bool) {
 	return false
 }
 
-func alreadySolvedP(context appengine.Context, team TeamRecord, actID string) (bool) {
+func alreadySolvedP(context appengine.Context, team TeamRecord, actID string) bool {
 	tas := TAStateRecord{}
 	// if I cared about being efficient, this would be a GetMulti... oh well
 	key := datastore.NewKey(context, "TAState", actID+":"+team.ID, 0, nil)
@@ -93,7 +93,7 @@ un-check "Announcements?" and press the Update button.)
 	t := template.Must(template.New("letter").Parse(letter))
 	buf := new(bytes.Buffer)
 	t.Execute(buf, MapSI{
-		"Team": team,
+		"Team":     team,
 		"Snippets": snippets,
 	})
 	return buf.String()
@@ -104,7 +104,7 @@ func snippets201312(context appengine.Context, team TeamRecord) (snippets []stri
 		p string
 		s string
 	}
-	table := []PS {
+	table := []PS{
 		{
 			"onlynumbers",
 			"NEW PUZZLE http://www.octothorpean.org/a/onlynumbers/ has numbers",
@@ -130,11 +130,13 @@ func snippets201312(context appengine.Context, team TeamRecord) (snippets []stri
 			"Old Demo Puzzle http://www.octothorpean.org/a/fourwinds/",
 		},
 	}
-	for _, v := range(table) {
-		if (!alreadySolvedP(context, team, v.p)) {
+	for _, v := range table {
+		if !alreadySolvedP(context, team, v.p) {
 			snippets = append(snippets, v.s)
 		}
-		if len(snippets) > 3 { break }
+		if len(snippets) > 3 {
+			break
+		}
 	}
 	return
 }
@@ -148,7 +150,7 @@ func adminspewmail(w http.ResponseWriter, r *http.Request) {
 	context := appengine.NewContext(r)
 	teams := getMailableTeams(context)
 	count := 0
-    for _, team := range(teams) {
+	for _, team := range teams {
 		context.Infof("  team %s", team.ID)
 		if mailedTeamRecentlyP(context, team) {
 			context.Infof("  ! RECENT")
@@ -162,20 +164,22 @@ func adminspewmail(w http.ResponseWriter, r *http.Request) {
 
 		ml := madlib(team, snippets)
 		msg := &mail.Message{
-            Sender:  "Octothorpean <octothorpean@gmail.com>",
-            To:      team.EmailList,
-            Subject: "# more ## puzzles ###",
-            Body:    ml,
-			Bcc: []string{"lahosken@gmail.com"},
-        }
+			Sender:  "Octothorpean <octothorpean@gmail.com>",
+			To:      team.EmailList,
+			Subject: "# more ## puzzles ###",
+			Body:    ml,
+			Bcc:     []string{"lahosken@gmail.com"},
+		}
 		if err := mail.Send(context, msg); err != nil {
-            context.Errorf("Couldn't send email to %s: %v", team.ID, err)
+			context.Errorf("Couldn't send email to %s: %v", team.ID, err)
 			continue
-        }
-		
+		}
+
 		TLog(context, team.ID, "", "mailed", "")
 		count = count + 1
-		if count > 9 { break }
+		if count > 9 {
+			break
+		}
 	}
 	spewjsonp(w, r, count)
 }

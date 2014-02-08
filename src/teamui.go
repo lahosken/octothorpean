@@ -73,9 +73,9 @@ func loginjson(w http.ResponseWriter, r *http.Request) {
 	session, tid := GetAndOrUpdateSession(w, r)
 	if tid != "" {
 		js := MapSI{
-			"success": false,
-			"team": tid,
-			"message": "Already logged in!",
+			"success":  false,
+			"team":     tid,
+			"message":  "Already logged in!",
 			"similars": []string{},
 		}
 		spewjsonp(w, r, js)
@@ -86,9 +86,9 @@ func loginjson(w http.ResponseWriter, r *http.Request) {
 	t := getTeam(context, tid)
 	if t == nil {
 		js := MapSI{
-			"success": false,
-			"team": "",
-			"message": "No such team!",
+			"success":  false,
+			"team":     "",
+			"message":  "No such team!",
 			"similars": getTeamIDsSimilarTo(context, tid, 5),
 		}
 		spewjsonp(w, r, js)
@@ -97,9 +97,9 @@ func loginjson(w http.ResponseWriter, r *http.Request) {
 	enteredPassword := strings.TrimSpace(r.FormValue("password"))
 	if enteredPassword != t.Password {
 		js := MapSI{
-			"success": false,
-			"team": tid,
-			"message": "Password did not match!",
+			"success":  false,
+			"team":     tid,
+			"message":  "Password did not match!",
 			"similars": []string{},
 		}
 		spewjsonp(w, r, js)
@@ -108,9 +108,9 @@ func loginjson(w http.ResponseWriter, r *http.Request) {
 	session.loginSession(context, tid)
 	TLog(context, tid, "", "login", "")
 	js := MapSI{
-		"success": true,
-		"team": tid,
-		"message": "OK.",
+		"success":  true,
+		"team":     tid,
+		"message":  "OK.",
 		"similars": []string{},
 	}
 	spewjsonp(w, r, js)

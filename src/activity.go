@@ -167,7 +167,7 @@ func activityjson(w http.ResponseWriter, r *http.Request) {
 		js := MapSI{
 			"err": "no act",
 			"act": actID,
-        }
+		}
 		spewjsonp(w, r, js)
 		return
 	}
@@ -178,7 +178,7 @@ func activityjson(w http.ResponseWriter, r *http.Request) {
 		js := MapSI{
 			"err": "no such act",
 			"act": actID,
-        }
+		}
 		spewjsonp(w, r, js)
 		return
 	}
@@ -186,13 +186,13 @@ func activityjson(w http.ResponseWriter, r *http.Request) {
 		js := MapSI{
 			"err": err.Error(),
 			"act": actID,
-        }
+		}
 		spewjsonp(w, r, js)
 		return
 	}
 	tas := TAStateRecord{}
-	if (tid != "") {
-		  		key = datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
+	if tid != "" {
+		key = datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
 		err = datastore.Get(context, key, &tas)
 		if err != nil && err != datastore.ErrNoSuchEntity {
 			context.Warningf("View TAS hit ERR %s", err.Error())
@@ -205,13 +205,13 @@ func activityjson(w http.ResponseWriter, r *http.Request) {
 	guesstoken := session.actionToken("guess " + actID)
 	hinttoken := session.actionToken("hint " + actID)
 	js := MapSI{
-		"act": actID,
-		"title": act.Title,
-		"guts": template.HTML(string(act.Guts)),
+		"act":        actID,
+		"title":      act.Title,
+		"guts":       template.HTML(string(act.Guts)),
 		"guesstoken": guesstoken,
-		"hinttoken": hinttoken,
-		"hints": act.Hints[:tas.Hints],
-		"solvedP": tas.SolvedP,
+		"hinttoken":  hinttoken,
+		"hints":      act.Hints[:tas.Hints],
+		"solvedP":    tas.SolvedP,
 	}
 	spewjsonp(w, r, js)
 }
@@ -233,7 +233,7 @@ func showActPage(w http.ResponseWriter, r *http.Request, session *Session, tid s
 	}
 	tas := TAStateRecord{}
 	if tid != "" {
-  		key = datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
+		key = datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
 		err = datastore.Get(context, key, &tas)
 		if err != nil && err != datastore.ErrNoSuchEntity {
 			context.Warningf("View TAS hit ERR %s", err.Error())
