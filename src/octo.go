@@ -20,7 +20,7 @@ func init() {
 	// activities and groups of activities
 	// http.HandleFunc("/a/", activity)
 	http.HandleFunc("/a/", activity)
-	http.HandleFunc("/fakeowl/", actowl)
+	http.HandleFunc("/a.json", activityjson)
 	http.HandleFunc("/arc/", arc)
 	http.HandleFunc("/arc.json", arcjson)
 	http.HandleFunc("/guess", guess)
@@ -32,6 +32,7 @@ func init() {
 	http.HandleFunc("/whosplaying", dashboard)
 	http.HandleFunc("/loginprompt", loginprompt)
 	http.HandleFunc("/login", login)
+	http.HandleFunc("/login.json", loginjson)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/registerprompt", registerprompt)
 	http.HandleFunc("/register", register)

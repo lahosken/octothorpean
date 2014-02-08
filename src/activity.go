@@ -94,7 +94,7 @@ func arcjson(w http.ResponseWriter, r *http.Request) {
 	context := appengine.NewContext(r)
 	w.Header().Set("Content-Type", "text/javascript")
 	arclist := strings.Split(r.FormValue("arcs"), ",")
-	js := map[string](interface{}){"arcs": arcmaps(context, tid, arclist)}
+	js := MapSI{"arcs": arcmaps(context, tid, arclist)}
 	spewjsonp(w, r, js)
 }
 
@@ -159,31 +159,61 @@ func activity(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func actowl(w http.ResponseWriter, r *http.Request) {
+func activityjson(w http.ResponseWriter, r *http.Request) {
 	session, tid := GetAndOrUpdateSession(w, r)
 	context := appengine.NewContext(r)
-	urlparts := strings.Split(r.URL.Path, "/")
-	if len(urlparts) < 3 {
-		context.Errorf("ACT strange path too few parts %s", r.URL.Path)
-		return
-	}
-	actID := urlparts[2]
+	actID := r.FormValue("act")
 	if actID == "" {
-		w.WriteHeader(http.StatusNotFound)
-		showMessage(w, "No such activity", "No such activity", tid, "")
+		js := MapSI{
+			"err": "no act",
+			"act": actID,
+        }
+		spewjsonp(w, r, js)
 		return
 	}
-	// if URL is something like /a/xwd or /a/xwd/ , 
-	// show the xwd puzzle's "index.html" (stored in act's Guts)
-	if len(urlparts) == 3 || (len(urlparts) == 4 && urlparts[3] == "") {
-		showActOwlPage(w, r, session, tid, context, actID)
+	key := datastore.NewKey(context, "Activity", actID, 0, nil)
+	act := ActivityRecord{}
+	err := datastore.Get(context, key, &act)
+	if err == datastore.ErrNoSuchEntity {
+		js := MapSI{
+			"err": "no such act",
+			"act": actID,
+        }
+		spewjsonp(w, r, js)
 		return
 	}
-	// if URL is like /a/xwd/grid.png, serve file from the ActFS xwd/grid.png
-	if len(urlparts) > 3 {
-		showActFS(w, r, session, tid, context, actID, urlparts)
+	if err != nil {
+		js := MapSI{
+			"err": err.Error(),
+			"act": actID,
+        }
+		spewjsonp(w, r, js)
 		return
 	}
+	tas := TAStateRecord{}
+	if (tid != "") {
+		  		key = datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
+		err = datastore.Get(context, key, &tas)
+		if err != nil && err != datastore.ErrNoSuchEntity {
+			context.Warningf("View TAS hit ERR %s", err.Error())
+		}
+	}
+	if tas.Hints > len(act.Hints) {
+		tas.Hints = len(act.Hints)
+		act.Hints[len(act.Hints)-1] += " <i>This is the last hint.</i>"
+	}
+	guesstoken := session.actionToken("guess " + actID)
+	hinttoken := session.actionToken("hint " + actID)
+	js := MapSI{
+		"act": actID,
+		"title": act.Title,
+		"guts": template.HTML(string(act.Guts)),
+		"guesstoken": guesstoken,
+		"hinttoken": hinttoken,
+		"hints": act.Hints[:tas.Hints],
+		"solvedP": tas.SolvedP,
+	}
+	spewjsonp(w, r, js)
 }
 
 // helper func for activity() : show "index.html" page for an activity
@@ -201,64 +231,19 @@ func showActPage(w http.ResponseWriter, r *http.Request, session *Session, tid s
 		fmt.Fprintf(w, `Got error trying to load activity. %s<br>
                      Things might not work right`, err.Error())
 	}
-	key = datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
 	tas := TAStateRecord{}
-	err = datastore.Get(context, key, &tas)
-	if err != nil && err != datastore.ErrNoSuchEntity {
-		context.Warningf("View TAS hit ERR %s", err.Error())
+	if tid != "" {
+  		key = datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
+		err = datastore.Get(context, key, &tas)
+		if err != nil && err != datastore.ErrNoSuchEntity {
+			context.Warningf("View TAS hit ERR %s", err.Error())
+		}
 	}
 	if tas.Hints > len(act.Hints) {
 		tas.Hints = len(act.Hints)
 		act.Hints[len(act.Hints)-1] += " <i>This is the last hint.</i>"
 	}
 	t := template.Must(template.New("").Parse(tActivity))
-	guesstoken := session.actionToken("guess " + actID)
-	hinttoken := session.actionToken("hint " + actID)
-	t.Execute(w, MapSI{
-		"Nickname":   actID,
-		"PageTitle":  "Activity: " + act.Title,
-		"TID":        tid,
-		"GuessToken": guesstoken,
-		"HintToken":  hinttoken,
-		"Title":      act.Title,
-		"URL":        act.URL,
-		"Guts":       template.HTML(string(act.Guts)),
-		"ActInitJSON": MapSI{
-			"hints": act.Hints[:tas.Hints],
-		},
-		"SolvedP":  tas.SolvedP,
-		"Solution": strings.ToUpper(act.Solutions[0]),
-		"Icon":     actgeticonurl(context, actID),
-		"IconLink": actgeticonlink(context, actID),
-	})
-}
-
-// helper func for activity() : show "index.html" page for an activity
-func showActOwlPage(w http.ResponseWriter, r *http.Request, session *Session, tid string, context appengine.Context, actID string) {
-	key := datastore.NewKey(context, "Activity", actID, 0, nil)
-	act := ActivityRecord{}
-	err := datastore.Get(context, key, &act)
-	if err == datastore.ErrNoSuchEntity {
-		w.WriteHeader(http.StatusNotFound)
-		showMessage(w, "No such activity", "No such activity", tid, "")
-		return
-	}
-	if err != nil {
-		context.Warningf("View act hit ERR %s", err.Error())
-		fmt.Fprintf(w, `Got error trying to load activity. %s<br>
-                     Things might not work right`, err.Error())
-	}
-	key = datastore.NewKey(context, "TAState", actID+":"+tid, 0, nil)
-	tas := TAStateRecord{}
-	err = datastore.Get(context, key, &tas)
-	if err != nil && err != datastore.ErrNoSuchEntity {
-		context.Warningf("View TAS hit ERR %s", err.Error())
-	}
-	if tas.Hints > len(act.Hints) {
-		tas.Hints = len(act.Hints)
-		act.Hints[len(act.Hints)-1] += " <i>This is the last hint.</i>"
-	}
-	t := template.Must(template.New("").Parse(tOwlAct))
 	guesstoken := session.actionToken("guess " + actID)
 	hinttoken := session.actionToken("hint " + actID)
 	t.Execute(w, MapSI{
@@ -472,7 +457,7 @@ func handleCorrectGuess(w http.ResponseWriter, r *http.Request, tid string, cont
 			}
 		}
 	}
-	spewjsonp(w, r, map[string](interface{}){
+	spewjsonp(w, r, MapSI{
 		"feedback": feedback,
 		"nextacts": actgetnext(context, actID),
 	})
@@ -523,7 +508,7 @@ func hint(w http.ResponseWriter, r *http.Request) {
 	}
 	if tid == "" {
 		TLogHint(context, tid, actID, 0)
-		spewjsonp(w, r, map[string](interface{}){
+		spewjsonp(w, r, MapSI{
 			"hints": []string{
 				act.Hints[0] + " <br><i>(If you're not logged in, you can only see the first hint. Log in to enable hints beyond this one.)</i>",
 			},
@@ -549,7 +534,7 @@ func hint(w http.ResponseWriter, r *http.Request) {
 		act.Hints[len(act.Hints)-1] += " <i>This is the last hint.</i>"
 	}
 	TLogHint(context, tid, actID, tas.Hints)
-	spewjsonp(w, r, map[string](interface{}){
+	spewjsonp(w, r, MapSI{
 		"hints": act.Hints[:tas.Hints],
 	})
 }
@@ -561,7 +546,7 @@ func atokens(w http.ResponseWriter, r *http.Request) {
 		spewfeedback(w, r, "I don't even recognize this puzzle?")
 		return
 	}
-	spewjsonp(w, r, map[string]string{
+	spewjsonp(w, r, MapSI{
 		"act": actID,
 		"g":   session.actionToken("guess " + actID),
 		"h":   session.actionToken("hint " + actID),

@@ -69,6 +69,53 @@ func login(w http.ResponseWriter, r *http.Request) {
 	TLog(context, tid, "", "login", "")
 }
 
+func loginjson(w http.ResponseWriter, r *http.Request) {
+	session, tid := GetAndOrUpdateSession(w, r)
+	if tid != "" {
+		js := MapSI{
+			"success": false,
+			"team": tid,
+			"message": "Already logged in!",
+			"similars": []string{},
+		}
+		spewjsonp(w, r, js)
+		return
+	}
+	context := appengine.NewContext(r)
+	tid = strings.TrimSpace((r.FormValue("team")))
+	t := getTeam(context, tid)
+	if t == nil {
+		js := MapSI{
+			"success": false,
+			"team": "",
+			"message": "No such team!",
+			"similars": getTeamIDsSimilarTo(context, tid, 5),
+		}
+		spewjsonp(w, r, js)
+		return
+	}
+	enteredPassword := strings.TrimSpace(r.FormValue("password"))
+	if enteredPassword != t.Password {
+		js := MapSI{
+			"success": false,
+			"team": tid,
+			"message": "Password did not match!",
+			"similars": []string{},
+		}
+		spewjsonp(w, r, js)
+		return
+	}
+	session.loginSession(context, tid)
+	TLog(context, tid, "", "login", "")
+	js := MapSI{
+		"success": true,
+		"team": tid,
+		"message": "OK.",
+		"similars": []string{},
+	}
+	spewjsonp(w, r, js)
+}
+
 // user tried to log in, put to a nonexistent team. Show login screen
 // with some suggestions.
 func showNoSuchTeam(w http.ResponseWriter, r *http.Request, context appengine.Context, tid string) {
