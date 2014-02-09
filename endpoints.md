@@ -37,13 +37,13 @@ enter a guess or ask for a hint, you'll need one of those.
 
 guts is the HTML of the puzzle itself.
 
-  { "act": "ui",
-    "guesstoken": "5559327791",
-    "guts": "blah blah peek at the \u003ca href=\"soln.html\"\u003e",
-    "hints": null,
-    "hinttoken": "5551748155",
-    "solvedP": false,
-    "title": "User Interface" }
+    { "act": "ui",
+      "guesstoken": "5559327791",
+      "guts": "blah blah peek at the \u003ca href=\"soln.html\"\u003e",
+      "hints": null,
+      "hinttoken": "5551748155",
+      "solvedP": false,
+      "title": "User Interface" }
 
 ## /guess?act=ui&guess=foo bar&token=5559327791
 
@@ -53,8 +53,8 @@ A response has feedback. A totally-correct response has feedback and
 perhaps nextacts, a list of other act IDs unlocked.
 
     {
-       "feedback": "You solved it! Solution was COATING. Unlocked:  \u003ca class=\"onward\" href=\"/a/2013bilingual/\"\u003e2013bilingual\u003c/a\u003e",
-       "nextacts": [ "2013bilingual" ]
+       "feedback": "You solved it! Solution was FOOBAR. Unlocked:  \u003ca href=\"/a/ock/\"\u003eock\u003c/a\u003e",
+       "nextacts": [ "ock" ]
     }
 
 A not-so successful response has feedback. It's probably worth showing
