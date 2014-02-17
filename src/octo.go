@@ -64,7 +64,8 @@ func init() {
 	http.HandleFunc("/cron/weehours", cronweehours)
 	// wombat
 	if WOMBAT_ENABLE == true {
-		http.HandleFunc("/wombat/act", wombatact)
+		http.HandleFunc("/wombat/act.json", wombatact)
+		http.HandleFunc("/wombat/arc.json", wombatarc)
 	}
 }
 

@@ -76,10 +76,18 @@ func wombatact(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, val := range act.Partials {
 		split := strings.SplitN(val, " ", 2)
-		answer_list = append(answer_list, MapSI{
-			"answer": split[0],
-			"response": split[1],
-		})
+		if len(split) == 2 {
+			answer_list = append(answer_list, MapSI{
+				"answer": split[0],
+				"response": split[1],
+				"correct": false,
+			})
+		} else {
+			answer_list = append(answer_list, MapSI{
+				"answer": split[0],
+				"correct": false,
+			})
+		}
 	}
 	retval := MapSI{
 		"raw": act,
@@ -88,6 +96,46 @@ func wombatact(w http.ResponseWriter, r *http.Request) {
 	for _, val := range act.Extras {
 		split := strings.SplitN(val, " ", 2)
 		retval[split[0]] = split[1]
+	}
+	spewjsonp(w, r, retval)
+}
+
+/**
+start_codes.json:
+{
+  "version" : 1,
+  "start_codes" : [
+     {
+       "id" : "puzzle1",
+       "name" : "orienteering",
+       "answer_file" : "puzzle1_answers.json"
+
+     },
+     {
+       "id" : "wombat",
+       "name" : "God save the wombats",
+       "answer_file" : "wombat_answers.json"
+     }
+   ]
+}
+*/
+func wombatarc(w http.ResponseWriter, r *http.Request) {
+	if WOMBAT_ENABLE != true {
+		spewjsonp(w, r, MapSI{"wombat": "disabled"})
+		return
+	}
+	if WOMBAT_PASSWORD != r.FormValue("wombatpassword") {
+		spewjsonp(w, r, MapSI{"wombat": "bad wombatpassword"})		
+		return
+	}
+	context := appengine.NewContext(r)
+	arcID := r.FormValue("arc")
+	arc := fetcharc(context, arcID)
+	retval := []MapSI{}
+	for _, act := range arc.Act {
+		retval = append(retval, MapSI{
+			"id": act,
+		})
 	}
 	spewjsonp(w, r, retval)
 }
