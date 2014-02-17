@@ -35,6 +35,7 @@ type ActivityRecord struct {
 	Hints     []string `datastore:",noindex"`
 	Tags      []string `datastore:",noindex"`
 	IVars     []string `datastore:",noindex"` // INTERA vars // unused?
+	Extras []string `datastore:",noindex""` // unused by octo proper, used b wombat
 }
 
 type ICache struct {
@@ -94,8 +95,7 @@ func arcjson(w http.ResponseWriter, r *http.Request) {
 	context := appengine.NewContext(r)
 	w.Header().Set("Content-Type", "text/javascript")
 	arclist := strings.Split(r.FormValue("arcs"), ",")
-	js := MapSI{"arcs": arcmaps(context, tid, arclist)}
-	spewjsonp(w, r, js)
+	spewjsonp(w, r, MapSI{"arcs": arcmaps(context, tid, arclist)})
 }
 
 // Show an "arc"; roughly, a sequence of activities

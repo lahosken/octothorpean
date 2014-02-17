@@ -21,6 +21,7 @@ src/spewmail.go
 src/teamui.go
 src/teamstore.go
 src/templates.go
+src/wombat.go
 """
 
 DEST = "srvtest"

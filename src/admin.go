@@ -266,6 +266,9 @@ func ReadPuzTxt(context appengine.Context, f *zip.File, act *ActivityRecord) {
 		if strings.HasPrefix(line, "HINT") {
 			act.Hints = append(act.Hints, strings.TrimSpace(line[4:]))
 		}
+		if strings.HasPrefix(line, "EXTRA") {
+			act.Extras = append(act.Extras, strings.TrimSpace(line[5:]))
+		}
 		if strings.HasPrefix(line, "TAGS") {
 			rawtags := strings.Split(strings.TrimSpace(line[4:]), ",")
 			var already = map[string]bool{}

@@ -23,23 +23,24 @@ func init() {
 	http.HandleFunc("/a.json", activityjson)
 	http.HandleFunc("/arc/", arc)
 	http.HandleFunc("/arc.json", arcjson)
-	http.HandleFunc("/guess", guess)
-	http.HandleFunc("/hint", hint)
 	http.HandleFunc("/atokens", atokens)
 	http.HandleFunc("/b/", badgeprofile)
-	// team and team-login stuff
-	http.HandleFunc("/team/", teamprofile)
-	http.HandleFunc("/whosplaying", dashboard)
+	http.HandleFunc("/editteamprompt", editteamprompt)
+	http.HandleFunc("/editteam", editteam)
+	http.HandleFunc("/gossip", gossip)
+	http.HandleFunc("/guess", guess)
+	http.HandleFunc("/hint", hint)
 	http.HandleFunc("/loginprompt", loginprompt)
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/login.json", loginjson)
 	http.HandleFunc("/logout", logout)
+	// team and team-login stuff
 	http.HandleFunc("/registerprompt", registerprompt)
 	http.HandleFunc("/register", register)
 	http.HandleFunc("/resetpasswordprompt", resetpasswordprompt)
 	http.HandleFunc("/resetpassword", resetpassword)
-	http.HandleFunc("/editteamprompt", editteamprompt)
-	http.HandleFunc("/editteam", editteam)
+	http.HandleFunc("/team/", teamprofile)
+	http.HandleFunc("/whosplaying", dashboard)
 	// admin
 	http.HandleFunc("/admin/", adminmenu)
 	http.HandleFunc("/admin/gossip", admingossip)
@@ -59,10 +60,12 @@ func init() {
 	http.HandleFunc("/admin/dumpteamlogs.tsv", admindumpteamlogs)
 	http.HandleFunc("/admin/editteam", admineditteam)
 	http.HandleFunc("/admin/cleanteam", admincleanteam)
-	// social
-	http.HandleFunc("/gossip", gossip)
 	// morlocks
 	http.HandleFunc("/cron/weehours", cronweehours)
+	// wombat
+	if WOMBAT_ENABLE == true {
+		http.HandleFunc("/wombat/act", wombatact)
+	}
 }
 
 func topscreen(w http.ResponseWriter, r *http.Request) {
