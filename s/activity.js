@@ -8,8 +8,18 @@ var blork = []
 var fillUI = function(obj) {
 	if (!obj) { return; }
 	if (obj['feedback']) {
-		showLert(obj['feedback'])
-    }
+		if (obj['nextacts']) {
+			var lert_html = obj['feedback'] + '<br>Unlocked: ';
+			for (ix = 0; ix < obj['nextacts'].length; ix++) {
+				lert_html += '<a href="/a/' + obj['nextacts'][ix] + '">';
+				lert_html += obj['nextacts'][ix] + '</a>';
+			}
+			showLert(lert_html)
+		} else {
+			showLert(obj['feedback'])
+		}
+	}
+
 	if (obj['hints']) {
 		$("#hintlist").empty();
         for (ix = 0; ix < obj['hints'].length; ix++) {

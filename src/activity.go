@@ -372,17 +372,10 @@ func guess(w http.ResponseWriter, r *http.Request) {
 // correctly. if this is the first time the team has solved this puzzle,
 // we should unlock some more puzzles.
 func handleCorrectGuess(w http.ResponseWriter, r *http.Request, tid string, context appengine.Context, actID string, act ActivityRecord, guess string) {
-	nextacts := ""
-	for _, nextact := range actgetnext(context, actID) {
-		nextacts += " <a class=\"onward\" href=\"/a/" + nextact + "/\">" + nextact + "</a>,"
+	feedback := "You solved it! Solution was " + strings.ToUpper(act.Solutions[0] + ". ")
+	if tid == "" {
+		feedback = feedback + "<br><br>If you <a href=\"/loginprompt\">log in</a>, the game can keep track of what you've solved"
 	}
-	if nextacts != "" {
-		nextacts = ". Unlocked: " + nextacts[:len(nextacts)-1]
-		if tid == "" {
-			nextacts = nextacts + "<br><br>If you <a href=\"/loginprompt\">log in</a>, the game can keep track of what you've solved<br>(instead of asking you to re-solve puzzles)"
-		}
-	}
-	feedback := "You solved it! Solution was " + strings.ToUpper(act.Solutions[0]) + nextacts
 	var newbadges = map[string]int{}
 	tas := TAStateRecord{}
 	teamkey := datastore.NewKey(context, "Team", tid, 0, nil)
