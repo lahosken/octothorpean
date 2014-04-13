@@ -106,5 +106,21 @@ $('blanks').html(function(ix, oldtext) {
 	s = s.replace(/__/g, '_&nbsp;_');
 	return s;
 });
+
+$(function() {
+$('div.postcard').html(function(ix, oldtext) {
+  if (!nickname) { return; }
+  if (!teamID) { return; }
+  return (('You can earn points towards a<br>' +
+	   '<a href="http://www.octothorpean.org/b/postcard">Postcard ' +
+	   'Merit Badge</a><br>by mailing a photo of your<br>team at ' +
+	   'the puzzle location<br>' + 
+	   'to <tt>octothorpean@gmail.com</tt><br>' + 
+	   'Mention your team name<br>and the puzzle:<br>' +
+	   '"TEAM PUZZLE".').replace(/TEAM/, teamID).replace(/PUZZLE/, nickname))
+})})
+
+
+
 seekGossip();
 fillUI(initJSON);

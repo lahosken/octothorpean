@@ -3,10 +3,12 @@
 <script>
 nickname = '{{.Nickname}}'; guesstoken = '{{.GuessToken}}'; hinttoken = '{{.HintToken}}';
 initJSON = {{.ActInitJSON}};
+teamID = {{if .TID}}'{{.TID}}'{{else}}''{{end}};
 </script>
 <style>
 .lert { text-align: right; }
 .lert a { color: blue; text-decoration: underline; }
+div.postcard { float: right; text-align: left; font-size: small; }
 </style>
 #HEAD#
 #BODY#
