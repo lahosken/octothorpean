@@ -28,6 +28,7 @@ type ActivityRecord struct {
 	Nickname  string
 	Title     string `datastore:",noindex"`
 	GCNote    string `datastore:",noindex"`
+	Blurb     string  // description for emails; few puzzles have this
 	URL       string `datastore:",noindex"`
 	Guts      []byte
 	Solutions []string `datastore:",noindex"`

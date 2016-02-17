@@ -257,6 +257,9 @@ func ReadPuzTxt(context appengine.Context, f *zip.File, act *ActivityRecord) {
 		if strings.HasPrefix(line, "GCNOTE") {
 			act.GCNote = line[6:]
 		}
+		if strings.HasPrefix(line, "BLURB") {
+			act.Blurb = strings.TrimSpace(line[5:])
+		}
 		if strings.HasPrefix(line, "SOLUTION") {
 			act.Solutions = append(act.Solutions, scrunch(line[8:]))
 		}
