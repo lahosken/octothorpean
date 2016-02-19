@@ -11,7 +11,7 @@ import (
 	"text/template"
 	"unicode"
 
-//	"github.com/mjibson/appstats"
+	//	"github.com/mjibson/appstats"
 )
 
 func init() {
@@ -62,6 +62,7 @@ func init() {
 	http.HandleFunc("/admin/cleanteam", admincleanteam)
 	// morlocks
 	http.HandleFunc("/cron/weehours", cronweehours)
+	http.HandleFunc("/cron/mailstraggler", cronmailstraggler)
 	// wombat
 	if WOMBAT_ENABLE == true {
 		http.HandleFunc("/wombat/act.json", wombatact)

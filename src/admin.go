@@ -202,6 +202,7 @@ func adminupload(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
+	fmt.Fprint(w, `<a href="/admin/uploadprompt">Back</a>`)
 }
 
 func adminuploadintera(w http.ResponseWriter, r *http.Request) {
@@ -490,7 +491,7 @@ func admineditactivity(w http.ResponseWriter, r *http.Request) {
 			guts = string(a.Guts)
 			sols = a.Solutions
 			partials = a.Partials
-			// hey would this be easier if I just used this record 
+			// hey would this be easier if I just used this record
 			// instead of separate local vars in the first place?
 			hints = a.Hints
 		} else {
@@ -725,7 +726,7 @@ func adminwtflogs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	outs := []string{}
-	for i := DEPTH; i > 1; i-- { // if we were prostyle, we'd sort. 
+	for i := DEPTH; i > 1; i-- { // if we were prostyle, we'd sort.
 		for key, value := range count {
 			if value != i {
 				continue
@@ -789,7 +790,7 @@ func adminmaillist(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Dump tab-separated-values 
+// Dump tab-separated-values
 func admindumpteamlogs(w http.ResponseWriter, r *http.Request) {
 	aid := checkAdminLogin(w, r)
 	if aid == "" {
