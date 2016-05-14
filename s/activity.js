@@ -11,7 +11,7 @@ var fillUI = function(obj) {
 		if (obj['nextacts']) {
 			var lert_html = obj['feedback'] + '<br>Unlocked: ';
 			for (ix = 0; ix < obj['nextacts'].length; ix++) {
-				lert_html += '<a href="/a/' + obj['nextacts'][ix] + '">';
+				lert_html += '<a href="/a/' + obj['nextacts'][ix] + '/">';
 				lert_html += obj['nextacts'][ix] + '</a>';
 			}
 			showLert(lert_html)

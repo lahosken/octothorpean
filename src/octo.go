@@ -55,7 +55,6 @@ func init() {
 	http.HandleFunc("/admin/editadmin", admineditadmin)
 	http.HandleFunc("/admin/editactivity", admineditactivity)
 	http.HandleFunc("/admin/teamspreadsheet", adminteamspreadsheet)
-	http.HandleFunc("/admin/spewmail", adminspewmail)
 	http.HandleFunc("/admin/maillist", adminmaillist)
 	http.HandleFunc("/admin/dumpteamlogs.tsv", admindumpteamlogs)
 	http.HandleFunc("/admin/editteam", admineditteam)
