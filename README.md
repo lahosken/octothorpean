@@ -1,4 +1,4 @@
-This is the source code behind http://www.octothorpean.org/ ,
+This is the source code behind https://www.octothorpean.org/ ,
 an online puzzlehunt. It runs on Google's
 [App Engine platform](https://developers.google.com/appengine/docs/go/gettingstarted/introduction).
 Variants on this code powered other puzzlehunts:

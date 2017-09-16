@@ -244,7 +244,7 @@ These excellent teams completed the hunt<br>
 		`You earn this badge by solving puzzles that use parts of 
         San Francisco, land of the 
         <a href="http://bayareanightgame.org/">Bay Area Night Game</a> and the
-        <a href="http://www.2tonegame.org/">2-Tone Game</a>.`,
+        <a href="https://lahosken.san-francisco.ca.us/frivolity/2tone/">2-Tone Game</a>.`,
 	},
 	"shinteki": {
 		"Shinteki",
