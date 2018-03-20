@@ -145,7 +145,7 @@ These excellent teams completed the hunt<br>
 	"meta": {
 		"Metapuzzles",
 		`Expertise in solving puzzles that are themselves built
-        from other puzzles. The <a hre="http://www.mit.edu/~puzzle/">
+        from other puzzles. The <a href="http://www.mit.edu/~puzzle/">
         MIT Mystery Hunt</a> is famous for these.`,
 	},
 	"morse": {

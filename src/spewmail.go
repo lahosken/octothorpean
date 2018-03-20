@@ -59,7 +59,7 @@ Enjoy!
 # # #
 
 (If you don't want future announcements, edit your team info:
-http://www.octothorpean.org/editteamprompt
+https://www.octothorpean.org/editteamprompt
 un-check "Announcements?" and press the Update button.)
 `
 	t := template.Must(template.New("letter").Parse(letter))
@@ -143,7 +143,7 @@ func cronmailstraggler(w http.ResponseWriter, r *http.Request) {
 				}
 				unsolvedBlurbs = append(unsolvedBlurbs,
 					"+ "+blurbedAct.Title+": "+blurbedAct.Blurb+
-						"\n    http://www.octothorpean.org/a/"+blurbedAct.Nickname+"/")
+						"\n    https://www.octothorpean.org/a/"+blurbedAct.Nickname+"/")
 			}
 		}
 		if len(unsolvedBlurbs) < 3 {

@@ -260,7 +260,7 @@ Thank you for creating an account on octothorpean.org!
 Your team name is: %s
 Your password is: %s 
 
-Login at http://octothorpean.org/loginprompt?team=%s    
+Login at https://octothorpean.org/loginprompt?team=%s    
 
 # # # Have fun! # # #
 

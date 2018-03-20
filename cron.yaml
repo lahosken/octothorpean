@@ -5,4 +5,4 @@ cron:
 
 - description: mail someone who left undone business
   url: /cron/mailstraggler
-  schedule: every 1700 hours
+  schedule: every 170 hours

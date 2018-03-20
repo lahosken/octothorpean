@@ -106,7 +106,7 @@ func admineditadmin(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			ALog(context, aid, "editadmin", admin)
 			fmt.Fprintf(w, `Saved. They can log in at 
-                http://www.octothorpean.org/admin/login?admin=%s&amp;passwd=%s<br>
+                https://www.octothorpean.org/admin/login?admin=%s&amp;passwd=%s<br>
                 <b><a href="/admin/">Back to admin menu</a></b><br><br>`,
 				html.EscapeString(admin), html.EscapeString(passwd))
 		} else {

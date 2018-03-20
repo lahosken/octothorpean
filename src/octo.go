@@ -18,7 +18,6 @@ func init() {
 	// top screen
 	http.HandleFunc("/", topscreen)
 	// activities and groups of activities
-	// http.HandleFunc("/a/", activity)
 	http.HandleFunc("/a/", activity)
 	http.HandleFunc("/a.json", activityjson)
 	http.HandleFunc("/arc/", arc)

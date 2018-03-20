@@ -28,7 +28,7 @@ var fillUI = function(obj) {
 
 var seekGossip = function() {
 	// domain is octothorpean or localhost
-	var url = 'http://www.octothorpean.org/gossip';
+	var url = 'https://www.octothorpean.org/gossip';
 	if (document.URL.indexOf('localhost') > 1) {
 		url = 'http://localhost:8080/gossip';
 	}
