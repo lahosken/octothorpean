@@ -67,6 +67,8 @@ def Templates():
 def Copy(frompath):
   if not frompath: return
   topath = os.path.join(DEST, frompath)
+  if "src/" in frompath:
+    topath = topath.replace("src/", "")
   todir = os.path.dirname(topath)
   if not os.path.isdir(todir):
     os.makedirs(todir)
