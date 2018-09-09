@@ -156,7 +156,7 @@ func cronmailstraggler(w http.ResponseWriter, r *http.Request) {
 		}
 		ml := madlib(team, unsolvedBlurbs)
 		msg := &mail.Message{
-			Sender: "Octothorpean <octothorpean@gmail.com>",
+			Sender:  "Octothorpean <octothorpean@gmail.com>",
 			To:      team.EmailList,
 			Subject: "# More ## Puzzles ###",
 			Body:    ml,

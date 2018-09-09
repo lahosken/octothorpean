@@ -10,7 +10,6 @@ import (
 	"strings"
 	"text/template"
 	"unicode"
-
 	//	"github.com/mjibson/appstats"
 )
 
@@ -51,6 +50,7 @@ func init() {
 	http.HandleFunc("/admin/digestupload", digestupload)
 	http.HandleFunc("/admin/uploadintera", adminuploadintera)
 	http.HandleFunc("/admin/uploadprompt", adminuploadprompt)
+	http.HandleFunc("/admin/uploadxxx", adminuploadxxx)
 	http.HandleFunc("/admin/editadmin", admineditadmin)
 	http.HandleFunc("/admin/editactivity", admineditactivity)
 	http.HandleFunc("/admin/teamspreadsheet", adminteamspreadsheet)

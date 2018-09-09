@@ -34,7 +34,7 @@ type TAStateRecord struct {
 	Hints   int  // How many hints did they "buy"?
 }
 
-// What has this team done? A team will create many of these logs as it 
+// What has this team done? A team will create many of these logs as it
 // is created, logs in, makes guesses, sovlves puzzles, asks for hints...
 type TLogRecord struct {
 	Created time.Time

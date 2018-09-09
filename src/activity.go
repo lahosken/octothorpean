@@ -1,7 +1,7 @@
 package octo
 
 /*
- * Activities (aka Puzzles) and groups of activities 
+ * Activities (aka Puzzles) and groups of activities
  * (aka page that lists puzzles a team has "unlocked" w/solving status?...
  *  except that we're still figuring out what this means...)
  */
@@ -28,15 +28,15 @@ type ActivityRecord struct {
 	Nickname  string
 	Title     string `datastore:",noindex"`
 	GCNote    string `datastore:",noindex"`
-	Blurb     string  // description for emails; few puzzles have this
+	Blurb     string // description for emails; few puzzles have this
 	URL       string `datastore:",noindex"`
 	Guts      []byte
 	Solutions []string `datastore:",noindex"`
 	Partials  []string `datastore:",noindex"`
 	Hints     []string `datastore:",noindex"`
 	Tags      []string `datastore:",noindex"`
-	IVars     []string `datastore:",noindex"` // INTERA vars // unused?
-	Extras []string `datastore:",noindex""` // unused by octo proper, used b wombat
+	IVars     []string `datastore:",noindex"`  // INTERA vars // unused?
+	Extras    []string `datastore:",noindex""` // unused by octo proper, used b wombat
 }
 
 type ICache struct {
@@ -147,7 +147,7 @@ func activity(w http.ResponseWriter, r *http.Request) {
 		showMessage(w, "No such activity", "No such activity", tid, "")
 		return
 	}
-	// if URL is something like /a/xwd or /a/xwd/ , 
+	// if URL is something like /a/xwd or /a/xwd/ ,
 	// show the xwd puzzle's "index.html" (stored in act's Guts)
 	if len(urlparts) == 3 || (len(urlparts) == 4 && urlparts[3] == "") {
 		showActPage(w, r, session, tid, context, actID)
@@ -373,7 +373,7 @@ func guess(w http.ResponseWriter, r *http.Request) {
 // correctly. if this is the first time the team has solved this puzzle,
 // we should unlock some more puzzles.
 func handleCorrectGuess(w http.ResponseWriter, r *http.Request, tid string, context appengine.Context, actID string, act ActivityRecord, guess string) {
-	feedback := "You solved it! Solution was " + strings.ToUpper(act.Solutions[0] + ". ")
+	feedback := "You solved it! Solution was " + strings.ToUpper(act.Solutions[0]+". ")
 	if tid == "" {
 		feedback = feedback + "<br><br>If you <a href=\"/loginprompt\">log in</a>, the game can keep track of what you've solved"
 	}

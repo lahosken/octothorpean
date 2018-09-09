@@ -144,6 +144,31 @@ func adminuploadprompt(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func adminuploadxxx(w http.ResponseWriter, r *http.Request) {
+	context := appengine.NewContext(r)
+	aid := checkAdminLogin(w, r)
+	if aid == "" {
+		io.WriteString(w, "<p>You really need to log in. Sorry about that.")
+		return
+	}
+	zipfileFile, _, err := r.FormFile("zipfile")
+	if err != nil {
+		fmt.Fprintf(w, "<p>Got zip file form error: %v", err)
+	}
+	// TODO: I _think_ that in later golang versions, there's a less
+	// bodgey way to get the file's size (maybe from the header)?
+	fileSize, err := zipfileFile.Seek(0, 2)
+	if err != nil {
+		fmt.Fprintf(w, "<p>Got zip file end-seek error: %v", err)
+	}
+	_, err = zipfileFile.Seek(0, 0)
+	if err != nil {
+		fmt.Fprintf(w, "<p>Got zip file rest-seek error: %v", err)
+	}
+	err, act := reader2Act(zipfileFile, context, fileSize)
+	fmt.Fprintf(w, "<p>got err %v and act %v using size %v ", err, act, fileSize)
+}
+
 func adminteamspreadsheet(w http.ResponseWriter, r *http.Request) {
 	aid := checkAdminLogin(w, r)
 	if aid == "" {
@@ -193,6 +218,10 @@ func adminupload(w http.ResponseWriter, r *http.Request) {
 	if len(file) == 0 {
 		context.Errorf("no file uploaded")
 		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	if len(blobmap["file"]) == 0 {
+		fmt.Fprint(w, `I see no files here`)
 		return
 	}
 	for _, b := range blobmap["file"] {
@@ -334,6 +363,10 @@ func ReadPuzTxt(context appengine.Context, f *zip.File, act *ActivityRecord) {
 }
 
 // probably run in a queued task REMIND or a backend?
+// TODO: on second thought, get rid of this?
+// this was part of the "blobstore way" of handling uploads
+// It's been so long, that I don't remember what limitation
+// had me jumping through these hoops--but they're not necessary now (2018)
 func digestupload(w http.ResponseWriter, r *http.Request) {
 	context := appengine.NewContext(r)
 	blobkey := appengine.BlobKey(r.FormValue("blobkey"))
@@ -344,17 +377,24 @@ func digestupload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	blobreader := blobstore.NewReader(context, blobkey)
-	zipreader, err := zip.NewReader(blobreader, stat.Size)
+	err, act := reader2Act(blobreader, context, stat.Size)
+	if err != nil {
+		blobstore.Delete(context, blobkey)
+	}
+	ALog(context, "???", "digest finish", act.Nickname)
+}
+
+func reader2Act(reader io.ReaderAt, context appengine.Context, readerSize int64) (err error, act ActivityRecord) {
+	zipreader, err := zip.NewReader(reader, readerSize)
 	if err != nil {
 		context.Errorf("ERR NEWREADER: %s", err)
 		return
 	}
-	act := new(ActivityRecord)
 	topDir := ""
 	found := false
 	for _, f := range zipreader.File {
 		if strings.ToLower(path.Base(f.Name)) == "puz.txt" {
-			ReadPuzTxt(context, f, act)
+			ReadPuzTxt(context, f, &act)
 			found = true
 			topDir, _ = path.Split(f.Name)
 		}
@@ -377,7 +417,7 @@ func digestupload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	key := datastore.NewKey(context, "Activity", act.Nickname, 0, nil)
-	_, err = datastore.Put(context, key, act)
+	_, err = datastore.Put(context, key, &act)
 	if err != nil {
 		context.Errorf("Activity save failed ACT %s ERR %s",
 			act.Nickname, err.Error())
@@ -418,10 +458,7 @@ func digestupload(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 	}
-	if errCount == 0 {
-		blobstore.Delete(context, blobkey)
-	}
-	ALog(context, "???", "digest finish", act.Nickname)
+	return
 }
 
 func admineditactivity(w http.ResponseWriter, r *http.Request) {

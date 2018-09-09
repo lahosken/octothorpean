@@ -5,7 +5,7 @@ import (
 	"appengine/datastore"
 	"net/http"
 	"strings"
-	)
+)
 
 /**
  * Misc endpoints useful for TernGame '14 and maybe the future
@@ -46,51 +46,51 @@ func wombatact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if WOMBAT_PASSWORD != r.FormValue("wombatpassword") {
-		spewjsonp(w, r, MapSI{"wombat": "bad wombatpassword"})		
+		spewjsonp(w, r, MapSI{"wombat": "bad wombatpassword"})
 		return
 	}
 	context := appengine.NewContext(r)
 	actID := r.FormValue("act")
 	if actID == "" {
-		spewjsonp(w, r, MapSI{"wombat": "need act=something"})		
+		spewjsonp(w, r, MapSI{"wombat": "need act=something"})
 		return
 	}
 	key := datastore.NewKey(context, "Activity", actID, 0, nil)
 	act := ActivityRecord{}
 	err := datastore.Get(context, key, &act)
 	if err == datastore.ErrNoSuchEntity {
-		spewjsonp(w, r, MapSI{"wombat": "no such act"})		
+		spewjsonp(w, r, MapSI{"wombat": "no such act"})
 		return
 	}
 	if err != nil {
-		spewjsonp(w, r, MapSI{"wombat": "err: " + err.Error()})		
+		spewjsonp(w, r, MapSI{"wombat": "err: " + err.Error()})
 		return
 	}
 	var answer_list = []MapSI{}
 	for ix, val := range act.Solutions {
 		answer_list = append(answer_list, MapSI{
-			"answer": val,
-			"correct": true,
-			"canonical": (ix==0), // first answer in puz.txt is canonical
+			"answer":    val,
+			"correct":   true,
+			"canonical": (ix == 0), // first answer in puz.txt is canonical
 		})
 	}
 	for _, val := range act.Partials {
 		split := strings.SplitN(val, " ", 2)
 		if len(split) == 2 {
 			answer_list = append(answer_list, MapSI{
-				"answer": split[0],
+				"answer":   split[0],
 				"response": split[1],
-				"correct": false,
+				"correct":  false,
 			})
 		} else {
 			answer_list = append(answer_list, MapSI{
-				"answer": split[0],
+				"answer":  split[0],
 				"correct": false,
 			})
 		}
 	}
 	retval := MapSI{
-		"raw": act,
+		"raw":         act,
 		"answer_list": answer_list,
 	}
 	for _, val := range act.Extras {
@@ -125,7 +125,7 @@ func wombatarc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if WOMBAT_PASSWORD != r.FormValue("wombatpassword") {
-		spewjsonp(w, r, MapSI{"wombat": "bad wombatpassword"})		
+		spewjsonp(w, r, MapSI{"wombat": "bad wombatpassword"})
 		return
 	}
 	context := appengine.NewContext(r)

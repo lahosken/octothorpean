@@ -1,7 +1,7 @@
 # application: n00bdash
 # version: main
 runtime: go
-api_version: go1
+api_version: go1.8
 
 default_expiration: "1h"
 

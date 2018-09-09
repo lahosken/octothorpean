@@ -3,7 +3,7 @@ package octo
 /**
  * session: give user's browser a cookie to keep track of their team
  *   We give the user a "sid" (session ID) cookie w/random value like "12345"
- *   We have a persistent store of session ID -> team ID. We can remember 
+ *   We have a persistent store of session ID -> team ID. We can remember
  *   that session 12345 is logged in as "mighty-atom".
  */
 
