@@ -1,9 +1,0 @@
-#wrap:BASE.html#
-#BODY#
-<p>{{.Message|html}}
-{{if .GoBack}}
-<p><a href="{{.GoBack|html}}">Back</a>
-{{else}}
-<p><button onClick="history.back();">OK</button>!
-{{end}}
-#BODY#

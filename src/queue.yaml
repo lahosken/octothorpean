@@ -1,3 +1,0 @@
-queue:
-- name: digest
-  rate: 1/s
