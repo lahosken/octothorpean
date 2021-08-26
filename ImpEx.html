@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link href="/h/s.css" rel=stylesheet>
+    <title># Octothorpean # Import # Export #</title>
+  </head>
+  <body>
+    <div id=topbar class="container p-3 mb-2 bg-secondary bg-gradient" style="position: relative;">
+      <nav style="--bs-breadcrumb-divider: ':';" aria-label="breadcrumb" class="text-white">
+	<ol class="breadcrumb">
+	  <li class="breadcrumb-item"> <a href="/" class="text-white"># Octothorpean</a> </li>	  
+          <li class="breadcrumb-item" aria-current="page"> # Import/Export </li>
+	</ol>
+      </nav>
+    </div>
+
+    <div id=main class=container>
+    
+<center>
+  <div class=container>
+    <div class=row>
+      <div class=container>
+	<p>
+	  If you're solving puzzles on one computer and want to work
+	  on another computer instead, you can "move" your progress over.
+	  Export your work on one computer (copying text to the
+	  clipboard which you can, <i>e.g.</i> email to yourself); then
+	  Import it on the other computer.
+      </div>
+      <div class=col>
+	<h3 id=exportStatus>Export</h3>
+
+	<div class="form-group">
+	  <label for="exportText"><button class="btn btn-primary btn-sm" id="exportBtn">Export</button> this text</label>
+	  <textarea class="form-control" id="exportText" rows=20></textarea>
+	</div>
+	
+      </div>
+      <div class=col>
+	<h3 id=importStatus>Import</h3>
+	<div class="form-group">
+	  &hellip;and <button class="btn btn-primary btn-sm" id="importBtn">Import</button> it on another machine
+	</div>
+      </div>
+    </div>
+  </div>
+</center>
+
+    </div>
+    
+    <div id=lowbar class="container p-3 mb-2 bg-secondary bg-gradient" style="position: relative;">
+      <div class="row text-center">
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>    
+    <script src="/h/impex.js"></script>
+  </body>
+</html>

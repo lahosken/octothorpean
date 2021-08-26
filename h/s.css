@@ -1,0 +1,53 @@
+@media print {
+    div#topbar { display: none }
+    div#lowbar { display: none }
+}
+
+div.msgBox {
+    width: 100%;
+    background-color: white;
+    color: black;
+    border: 1px dotted blue;
+    margin: 1em;
+    position: relative;
+}
+
+div.msgBox div.msgTxt {
+    margin-right: 2em;
+}
+
+div.msgBox div.msgDate {
+    font-size: x-small;
+    text-align: right;
+}
+
+div.msgBox button.msgCloseButton {
+    position: absolute;
+    top: 0px; right: 0px;
+    background-color: #777;
+    color: white;
+    z-index: 2000;
+}
+
+div#feedback {
+    position: fixed;
+    top: 80px;
+    right: 2em;
+    width: 50%;
+    text-align: right;
+    z-index: 1500;
+}
+
+img.arcIcon {
+    width: 100px;
+    height: 100px;
+}
+
+div#lowbar {
+    min-height: 146px;
+}
+
+#arcs .btn {
+    margin: 0.25em;
+}
+
